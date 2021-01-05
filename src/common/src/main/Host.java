@@ -15,6 +15,7 @@ public class Host implements Runnable {
 	public Host(String ip, int port, String[] spaces) {
 		this.ip = ip;
 		this.port = port;
+		this.spaces = spaces;
 	}
 
 	@Override
@@ -26,6 +27,7 @@ public class Host implements Runnable {
 	private void init() {
 		repo = new SpaceRepository();
 		repo.addGate("tcp://" + ip + ":" + port + "/?keep");
+
 		for (String s : spaces) {
 			repo.add(s, new SequentialSpace());
 		}
@@ -36,6 +38,7 @@ public class Host implements Runnable {
 		while (true) {
 			try {
 				System.out.println(inbox.get(new FormalField(String.class))[0]);
+
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
