@@ -7,39 +7,36 @@ import java.util.Scanner;
 
 public class Client implements Runnable {
 
-    String ip;
-    String spaceName;
-    int port;
+    private String ip;
+    private String spaceName;
+    private int port;
+    private RemoteSpace outbox;
 
     public Client (String ip, int port, String spaceName){
-
       this.ip = ip;
       this.spaceName = spaceName;
       this.port = port;
-
     }
 
     @Override
     public void run() {
-
-        RemoteSpace outbox = null;
         try {
-            outbox = new RemoteSpace("tcp://" + ip + ":" + port + "/"+ spaceName + "?keep" );
+            init();
+            loop();
 
-            while(true){
-
-                Scanner scan = new Scanner(System.in);
-
-                outbox.put(scan.nextLine());
-
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
+    private void init() throws IOException {
+        outbox = new RemoteSpace("tcp://" + ip + ":" + port + "/"+ spaceName + "?keep" );
+    }
+
+    private void loop() throws InterruptedException {
+        Scanner scan = new Scanner(System.in);
+        while(true){
+            outbox.put(scan.nextLine());
+        }
+    }
 }
