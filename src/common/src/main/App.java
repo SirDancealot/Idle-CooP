@@ -18,7 +18,7 @@ public class App {
 		System.out.println(tup[0]);
 		*/
 
-		RemoteSpace outbox = new RemoteSpace("tcp://188.178.206.128:33333/inbox?keep");
+		RemoteSpace outbox = new RemoteSpace("tcp://80.210.68.189:33333/inbox?keep");
 		outbox.put("goodbye");
 
 	}
