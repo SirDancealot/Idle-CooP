@@ -8,19 +8,8 @@ import java.io.IOException;
 public class App {
 
 	public static void main(String[] argv) throws InterruptedException, IOException {
-		/*
-		Space inbox = new SequentialSpace();
-		SpaceRepository inboxR = new SpaceRepository();
-		inboxR.add("inbox", inbox);
-		inboxR.addGate("tcp://localhost:31415/?keep");
-
-		Object[] tup = inboxR.get("inbox").get(new FormalField(String.class));
-		System.out.println(tup[0]);
-		*/
-
-		RemoteSpace outbox = new RemoteSpace("tcp://80.210.68.189:33333/inbox?keep");
-		outbox.put("goodbye");
-
+		new Thread(new Host("192.168.1.62", 33333, new String[] { "inbox" })).start();
+		new Thread(new Client("188.178.206.128", 33333, "inbox")).start();
 	}
 
 }

@@ -11,7 +11,7 @@ public class Client implements Runnable {
     String spaceName;
     int port;
 
-    public Client (String ip, String spaceName, int port){
+    public Client (String ip, int port, String spaceName){
 
       this.ip = ip;
       this.spaceName = spaceName;
