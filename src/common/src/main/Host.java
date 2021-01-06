@@ -9,10 +9,10 @@ public class Host implements Runnable {
 
 	private String[] spaces;
 	private String ip;
-	private int port;
+	private String port;
 	private SpaceRepository repo;
 
-	public Host(String ip, int port, String[] spaces) {
+	public Host(String ip, String port, String[] spaces) {
 		this.ip = ip;
 		this.port = port;
 		this.spaces = spaces;

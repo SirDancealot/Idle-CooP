@@ -1,5 +1,6 @@
 package common.src.main;
 
+import common.src.util.PropReader;
 import org.jspace.*;
 
 import java.io.IOException;
@@ -8,8 +9,10 @@ import java.io.IOException;
 public class App {
 
 	public static void main(String[] argv) throws InterruptedException, IOException {
-		new Thread(new Host("192.168.0.185", 33333, new String[] { "inbox" })).start();
-		new Thread(new Client("80.210.68.189", 33333, "inbox")).start();
+		PropReader.init();
+
+		new Thread(new Host(PropReader.getProperty("internalIP"), PropReader.getProperty("internalPort"), new String[] { "inbox" })).start();
+		new Thread(new Client(PropReader.getProperty("hostIP"), PropReader.getProperty("hostPort"), "inbox")).start();
 	}
 
 }
