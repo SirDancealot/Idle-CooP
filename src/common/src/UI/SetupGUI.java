@@ -1,5 +1,7 @@
 package common.src.UI;
 
+import common.src.main.App;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -35,8 +37,9 @@ public class SetupGUI extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == connectButton){
-            //TODO Start backend with info
-            
+
+            new Thread(new App(hostCheckBox.isSelected(),HostIP.getText(),HostPort.getText(),LocalPort.getText())).start();
+
             //TODO Launch GUI with info from backend
 
         } else if (e.getSource() == hostCheckBox){

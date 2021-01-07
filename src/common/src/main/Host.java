@@ -1,21 +1,22 @@
 package common.src.main;
 
-import org.jspace.FormalField;
-import org.jspace.SequentialSpace;
-import org.jspace.Space;
-import org.jspace.SpaceRepository;
+import org.jspace.*;
+
+import java.io.IOException;
 
 public class Host implements Runnable {
 
 	private String[] spaces;
 	private String ip;
-	private int port;
+	private String port;
 	private SpaceRepository repo;
+	private SpaceRepository clients;
 
-	public Host(String ip, int port, String[] spaces) {
+	public Host(String ip, String port, String[] spaces) {
 		this.ip = ip;
 		this.port = port;
 		this.spaces = spaces;
+		clients = new SpaceRepository();
 	}
 
 	@Override
@@ -27,19 +28,19 @@ public class Host implements Runnable {
 	private void init() {
 		repo = new SpaceRepository();
 		repo.addGate("tcp://" + ip + ":" + port + "/?keep");
-
-		for (String s : spaces) {
-			repo.add(s, new SequentialSpace());
-		}
+		repo.add("lobby", new SequentialSpace());
 	}
 
 	private void loop() {
-		Space inbox = repo.get("inbox");
+
+		Space lobby = repo.get("lobby");
 		while (true) {
 			try {
-				System.out.println(inbox.get(new FormalField(String.class))[0]);
+				Object[] tup = lobby.get(new ActualField("joinReq"), new FormalField(String.class), new FormalField(String.class));
+				Space client = new RemoteSpace("tcp://" + tup[1].toString() + ":" + tup[2].toString() + "/local?keep");
+				clients.add(tup[1].toString(), client);
 
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

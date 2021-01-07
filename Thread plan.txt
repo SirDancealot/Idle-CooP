@@ -1,0 +1,14 @@
+Threads:
+	GUI
+		gui duh
+	
+	HOST (butler)
+		creates links between players
+	
+	CLIENT (2, 1 waiting on gui, 1 waiting on host)
+		connects to a host
+		tells host what player is doing
+	
+	SIMULATION (invokes the GUI, non blocking gets from client)
+		calculates what is currently happening
+		client tells this what this player and other players are "doing" in the game, and this calculates state.

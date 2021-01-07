@@ -1,18 +1,31 @@
 package common.src.main;
 
-import org.jspace.*;
-
-import javax.swing.*;
+import common.src.util.PropManager;
 import java.io.IOException;
 
 
-public class App {
+public class App implements Runnable {
+	private boolean host;
 
-	public static void main(String[] argv) throws InterruptedException, IOException {
-		new Thread(new Host("192.168.0.185", 33333, new String[] { "inbox" })).start();
-		new Thread(new Client("80.210.68.189", 33333, "inbox")).start();
+	public App(boolean state, String hostIP, String hostPort, String localPort) {
+		this.host = state;
+	}
 
-		//SwingUtilities.invokeLater();
+	public static void main(String[] argv) {
+		new Thread(new App(true, "", "", "")).start();
+	}
 
+	@Override
+	public void run() {
+		try {
+			PropManager.init();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if(host)
+			new Thread(new Host(PropManager.getProperty("internalIP"), PropManager.getProperty("internalPort"), new String[] { "inbox" })).start();
+
+		new Thread(new Client(PropManager.getProperty("hostIP"), PropManager.getProperty("hostPort"), "inbox")).start();
 	}
 }

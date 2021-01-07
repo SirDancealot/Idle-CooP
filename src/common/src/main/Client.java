@@ -1,5 +1,6 @@
 package common.src.main;
 
+import common.src.util.PropManager;
 import org.jspace.RemoteSpace;
 import java.io.IOException;
 import java.util.Scanner;
@@ -9,10 +10,10 @@ public class Client implements Runnable {
 
     private String ip;
     private String spaceName;
-    private int port;
+    private String port;
     private RemoteSpace outbox;
 
-    public Client (String ip, int port, String spaceName){
+    public Client (String ip, String port, String spaceName){
       this.ip = ip;
       this.spaceName = spaceName;
       this.port = port;
