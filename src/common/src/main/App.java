@@ -1,18 +1,34 @@
 package common.src.main;
 
-import common.src.util.PropReader;
-import org.jspace.*;
-
+import common.src.util.PropManager;
 import java.io.IOException;
 
 
-public class App {
+public class App implements Runnable {
+	private String state;
 
-	public static void main(String[] argv) throws InterruptedException, IOException {
-		PropReader.init();
-
-		new Thread(new Host(PropReader.getProperty("internalIP"), PropReader.getProperty("internalPort"), new String[] { "inbox" })).start();
-		new Thread(new Client(PropReader.getProperty("hostIP"), PropReader.getProperty("hostPort"), "inbox")).start();
+	public App(String state, String hostIP, String hostPort, String localPort) {
+		this.state = state;
 	}
 
+	public static void main(String[] argv) {
+		new Thread(new App("host", "", "", "")).start();
+	}
+
+	@Override
+	public void run() {
+		try {
+			PropManager.init();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		switch (state) {
+			case "host":
+				new Thread(new Host(PropManager.getProperty("internalIP"), PropManager.getProperty("internalPort"), new String[] { "inbox" })).start();
+			case "client":
+			default:
+				new Thread(new Client(PropManager.getProperty("hostIP"), PropManager.getProperty("hostPort"), "inbox")).start();
+		}
+	}
 }

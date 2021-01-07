@@ -1,5 +1,6 @@
 package common.src.main;
 
+import common.src.util.PropManager;
 import org.jspace.RemoteSpace;
 import java.io.IOException;
 import java.util.Scanner;
