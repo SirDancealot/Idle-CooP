@@ -52,12 +52,20 @@ public class SpaceManager {
 	}
 
 	public static Space getHostSpace(String name) throws IOException {
-		String rsName = "tcp://" + PropManager.getProperty("hostIP") + ":" + PropManager.getProperty("hostPort") + "/" + name + "?keep";
+		String rsName;
+		if (PropManager.getProperty("host").equals("true"))
+			rsName = "tcp://" + PropManager.getProperty("localIP") + ":" + PropManager.getProperty("hostPort") + "/" + name + "?keep";
+		else
+			rsName = "tcp://" + PropManager.getProperty("hostIP") + ":" + PropManager.getProperty("hostPort") + "/" + name + "?keep";
 		return new RemoteSpace(rsName);
 	}
 
 	public static Space getRemoteSpace(String ip, String port, String name) throws IOException {
-		String rsProps = "tcp://" + ip + ":" + port + "/" + name + "?keep";
+		String rsProps;
+		if (ip.equals(PropManager.getProperty("externalIP")))
+			rsProps = "tcp://" + ip + ":" + port + "/" + name + "?keep";
+		else
+			rsProps = "tcp://" + PropManager.getProperty("localIP") + ":" + port + "/" + name + "?keep";
 		return new RemoteSpace(rsProps);
 	}
 
