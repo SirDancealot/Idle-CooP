@@ -1,11 +1,14 @@
 package common.src.main;
 
+import common.src.main.client.Client;
+import common.src.main.host.Host;
 import common.src.util.PropManager;
 import java.io.IOException;
 
 
 public class App implements Runnable {
 	private boolean host;
+	private String hostIP, hostPort, localPort;
 
 	public App(boolean host, String hostIP, String hostPort, String localPort) {
 		this.host = host;
@@ -26,9 +29,11 @@ public class App implements Runnable {
 			e.printStackTrace();
 		}
 
-		if(host)
-			new Thread(new Host(PropManager.getProperty("internalIP"), PropManager.getProperty("internalPort"), new String[] { "inbox" })).start();
+		if(host) {
+			new Thread(new Host(PropManager.getProperty("internalIP"), PropManager.getProperty("localPort"))).start();
 
-		new Thread(new Client(PropManager.getProperty("hostIP"), PropManager.getProperty("hostPort"), "inbox")).start();
+		}
+
+		new Thread(new Client(PropManager.getProperty("hostIP"), PropManager.getProperty("hostPort"))).start();
 	}
 }

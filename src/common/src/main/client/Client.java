@@ -1,7 +1,10 @@
-package common.src.main;
+package common.src.main.client;
 
 import common.src.util.PropManager;
+import common.src.util.SpaceManager;
 import org.jspace.RemoteSpace;
+import org.jspace.Space;
+
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -9,13 +12,12 @@ import java.util.Scanner;
 public class Client implements Runnable {
 
     private String ip;
-    private String spaceName;
     private String port;
+    private Space lobby;
     private RemoteSpace outbox;
 
-    public Client (String ip, String port, String spaceName){
+    public Client (String ip, String port){
       this.ip = ip;
-      this.spaceName = spaceName;
       this.port = port;
     }
 
@@ -31,7 +33,14 @@ public class Client implements Runnable {
     }
 
     private void init() throws IOException {
-        outbox = new RemoteSpace("tcp://" + ip + ":" + port + "/"+ spaceName + "?keep" );
+        lobby = SpaceManager.getHostSpace("lobby");
+        try {
+            lobby.put("joinReq", PropManager.getProperty("externalIP"), PropManager.getProperty("localPort"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        new Thread(new Chat()).start();
+        //outbox = new RemoteSpace("tcp://" + ip + ":" + port + "/"+ spaceName + "?keep" );
     }
 
     private void loop() throws InterruptedException {
