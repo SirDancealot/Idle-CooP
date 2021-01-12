@@ -20,7 +20,7 @@ public class App implements Runnable {
 	}
 
 	public static void main(String[] argv) {
-		new Thread(new App(false, "188.178.206.128", "33333", "33333")).start();
+		new Thread(new App(true, "192.168.0.185", "33333", "33334")).start();
 	}
 
 	@Override

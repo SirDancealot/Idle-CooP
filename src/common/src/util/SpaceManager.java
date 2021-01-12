@@ -24,7 +24,7 @@ public class SpaceManager {
 		publicSpaceRepo.addGate("tcp://" + IP + ":" + port + "/?keep");
 
 		localSpaceRepo = new SpaceRepository();
-		localSpaceRepo.addGate("tcp://localhost:33334/?keep");
+		localSpaceRepo.addGate("tcp://localhost:33335/?keep");
 
 		if (host) {
 			String hostPort = PropManager.getProperty("hostPort");
@@ -48,24 +48,21 @@ public class SpaceManager {
 	}
 
 	public static Space getLocalSpace(String sName) throws IOException {
-		return new RemoteSpace("tcp://localhost:33334/" + sName + "?keep");
+		return new RemoteSpace("tcp://localhost:33335/" + sName + "?keep");
 	}
 
 	public static Space getHostSpace(String name) throws IOException {
 		String rsName;
-		if (PropManager.getProperty("host").equals("true"))
-			rsName = "tcp://" + PropManager.getProperty("localIP") + ":" + PropManager.getProperty("hostPort") + "/" + name + "?keep";
-		else
 			rsName = "tcp://" + PropManager.getProperty("hostIP") + ":" + PropManager.getProperty("hostPort") + "/" + name + "?keep";
 		return new RemoteSpace(rsName);
 	}
 
 	public static Space getRemoteSpace(String ip, String port, String name) throws IOException {
 		String rsProps;
-		if (ip.equals(PropManager.getProperty("externalIP")))
-			rsProps = "tcp://" + ip + ":" + port + "/" + name + "?keep";
-		else
-			rsProps = "tcp://" + PropManager.getProperty("localIP") + ":" + port + "/" + name + "?keep";
+		if(ip.equals(PropManager.getProperty("externalIP"))){
+			ip = PropManager.getProperty("localIP");
+		}
+		rsProps = "tcp://" + ip + ":" + port + "/" + name + "?keep";
 		return new RemoteSpace(rsProps);
 	}
 
