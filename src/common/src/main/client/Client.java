@@ -39,7 +39,9 @@ public class Client implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        new Thread(new Chat()).start();
+        Thread t = new Thread(new Chat(false));
+        Chat.set_writer(t);
+        t.start();
         //outbox = new RemoteSpace("tcp://" + ip + ":" + port + "/"+ spaceName + "?keep" );
     }
 

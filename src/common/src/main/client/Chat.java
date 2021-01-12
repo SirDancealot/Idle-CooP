@@ -13,6 +13,7 @@ public class Chat implements Runnable {
 	private Space remoteChatSpace;
 	private Space localChatSpace;
 	private boolean reading;
+	private static Thread _writer;
 
 	public Chat(boolean reading) {
 		this.reading = reading;
@@ -30,7 +31,7 @@ public class Chat implements Runnable {
 	}
 
 	private void initWriter() {
-		new Thread(new Chat(true));
+		new Thread(new Chat(true)).start();
 		try {
 			remoteChatSpace = SpaceManager.getHostSpace("chat");
 			remoteChatSpace.put("joined", PropManager.getProperty("externalIP"));
@@ -44,11 +45,11 @@ public class Chat implements Runnable {
 		boolean stop = false;
 		while (!stop) {
 			String line = sc.nextLine();
-			switch (line) {
-				case "stop":
-					exit();
-					stop = true;
-					break;
+			if ("stop".equals(line)) {
+				exit();
+				stop = true;
+			} else {
+				writeChat(line);
 			}
 		}
 	}
@@ -70,11 +71,13 @@ public class Chat implements Runnable {
 				if (hostMsg) {
 					switch (msg) {
 						case "exit":
-
+							_writer.stop();
 						case "disconnected":
 							stop = true;
 							break;
 					}
+				} else {
+					System.out.println(msg);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -86,13 +89,20 @@ public class Chat implements Runnable {
 	private void exit() {
 		try {
 			remoteChatSpace.put("disconnect", PropManager.getProperty("externalIP"));
-
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void writeChat(String msg) {
+		try {
+			remoteChatSpace.put("msg", msg);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
+	public static void setWriter(Thread writer) {
+		_writer = writer;
 	}
 }
