@@ -53,7 +53,8 @@ public class SpaceManager {
 
 	public static Space getHostSpace(String name) throws IOException {
 		String rsName;
-			rsName = "tcp://" + PropManager.getProperty("hostIP") + ":" + PropManager.getProperty("hostPort") + "/" + name + "?keep";
+		String ip = ((PropManager.getProperty("host") != null ? PropManager.getProperty("localIP") : PropManager.getProperty("hostIP")));
+		rsName = "tcp://" + ip + ":" + PropManager.getProperty("hostPort") + "/" + name + "?keep";
 		return new RemoteSpace(rsName);
 	}
 
