@@ -20,7 +20,7 @@ public class App implements Runnable {
 	}
 
 	public static void main(String[] argv) {
-		new Thread(new App(true, "192.168.0.185", "33333", "33334")).start();
+		new Thread(new App(false, "188.178.206.128", "33333", "33333")).start();
 	}
 
 	@Override
@@ -33,10 +33,8 @@ public class App implements Runnable {
 		}
 
 		if(host) {
-			new Thread(new Host(PropManager.getProperty("internalIP"), PropManager.getProperty("localPort"))).start();
-
+			new Thread(new Host()).start();
 		}
-
-		new Thread(new Client(PropManager.getProperty("hostIP"), PropManager.getProperty("hostPort"))).start();
+		new Thread(new Client()).start();
 	}
 }
