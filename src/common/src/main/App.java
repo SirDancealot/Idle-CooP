@@ -7,8 +7,11 @@ import java.io.IOException;
 public class App implements Runnable {
 	private boolean host;
 
-	public App(boolean state, String hostIP, String hostPort, String localPort) {
-		this.host = state;
+	public App(boolean host, String hostIP, String hostPort, String localPort) {
+		this.host = host;
+		this.hostIP = hostIP;
+		this.hostPort = hostPort;
+		this.localPort = localPort;
 	}
 
 	public static void main(String[] argv) {
@@ -18,7 +21,7 @@ public class App implements Runnable {
 	@Override
 	public void run() {
 		try {
-			PropManager.init();
+			PropManager.initData(host, hostIP, hostPort, localPort);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

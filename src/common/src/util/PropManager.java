@@ -3,6 +3,7 @@ package common.src.util;
 import java.io.*;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -42,14 +43,13 @@ public class PropManager {
 			init = true;
 			new PropManager();
 		}
-
 		/*
 		Solution to find internal IP taken from this website
 		https://stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java
 		 */
 		try (final DatagramSocket socket = new DatagramSocket()) {
 			socket.connect(InetAddress.getByName("8.8.8.8"),10002);
-			PropManager.setProperty("internalIP", socket.getLocalAddress().getHostAddress());
+			PropManager.setProperty("localIP", socket.getLocalAddress().getHostAddress());
 		}
 
 		/*
@@ -59,5 +59,16 @@ public class PropManager {
 		URL ipPage = new URL("http://checkip.amazonaws.com");
 		BufferedReader br = new BufferedReader(new InputStreamReader(ipPage.openStream()));
 		PropManager.setProperty("externalIP", br.readLine());
+	}
+
+	public static void initData(boolean host, String hostIP, String hostPort, String localPort) throws IOException {
+		init();
+		if (host)
+			PropManager.setProperty("host", "true");
+		PropManager.setProperty("hostIP", hostIP);
+		PropManager.setProperty("hostPort", hostPort);
+		PropManager.setProperty("localPort", localPort);
+
+
 	}
 }
