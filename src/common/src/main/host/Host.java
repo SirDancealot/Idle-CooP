@@ -30,8 +30,8 @@ public class Host implements Runnable {
 	private void loop() {
 		while (true) {
 			try {
-				Object[] tup = lobby.get(new ActualField("joinReq"), new FormalField(String.class), new FormalField(String.class));
-				clients.put(tup[1].toString(), tup[2].toString());
+				Object[] tup = lobby.get(new ActualField("joinReq"), new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
+				clients.put(tup[1].toString(), tup[2].toString(), tup[3].toString());
 				System.out.println("--- Connected ---");
 				System.out.println(tup[1].toString()+":"+ tup[2].toString());
 			} catch (Exception e) {
