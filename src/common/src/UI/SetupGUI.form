@@ -57,7 +57,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value=""/>
+          <text value="33334"/>
         </properties>
       </component>
       <component id="61ebe" class="javax.swing.JTextField" binding="HostPort">
@@ -66,7 +66,9 @@
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <text value="33333"/>
+        </properties>
       </component>
       <component id="16810" class="javax.swing.JLabel">
         <constraints>
@@ -91,7 +93,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value=""/>
+          <text value="Fipzz"/>
         </properties>
       </component>
       <component id="e3a4b" class="javax.swing.JLabel">
