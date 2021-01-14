@@ -23,6 +23,8 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
     private JLabel chatWindow;
     private DefaultListModel skillList;
 
+    private PlayerState player;
+
     GameGUI(){
 
         this.setContentPane(gamePanel);
@@ -46,6 +48,8 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
 
         list1.setModel(skillList);
 
+        getPlayer();
+
     }
 
     @Override
@@ -68,7 +72,7 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
 
         if(list1.getSelectedValue() == "Woodcutting"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
-            requirements.setText("Requirements: \n You can do this \n alone or with \n a friend");
+            requirements.setText("Requirements: ");
 
         } else if (list1.getSelectedValue() == "Mining"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());

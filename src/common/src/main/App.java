@@ -34,6 +34,7 @@ public class App implements Runnable {
 		}
 
 		if(host) {
+			PropManager.setProperty("hostIP",PropManager.getProperty("externalIP"));
 			new Thread(new Host()).start();
 		}
 		new Thread(new Client(username)).start();
