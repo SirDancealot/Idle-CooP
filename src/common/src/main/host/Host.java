@@ -7,14 +7,10 @@ import java.io.IOException;
 
 public class Host implements Runnable {
 
-	private String ip;
-	private String port;
 	private Space lobby;
 	private Space clients;
 
-	public Host(String ip, String port) {
-		this.ip = ip;
-		this.port = port;
+	public Host() {
 		clients = new SequentialSpace();
 		SpaceManager.addLocalSpace(clients, "clients");
 		new Thread(new Chat()).start();

@@ -11,14 +11,11 @@ import java.util.Scanner;
 
 public class Client implements Runnable {
 
-    private String ip;
-    private String port;
+    private String username;
     private Space lobby;
-    private RemoteSpace outbox;
 
-    public Client (String ip, String port){
-      this.ip = ip;
-      this.port = port;
+    public Client(String username) {
+        this.username = username;
     }
 
     @Override
@@ -38,16 +35,8 @@ public class Client implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Thread t = new Thread(new Chat(false));
+        Thread t = new Thread(new Chat(username, false));
         Chat.setWriter(t);
         t.start();
-        //outbox = new RemoteSpace("tcp://" + ip + ":" + port + "/"+ spaceName + "?keep" );
-    }
-
-    private void loop() throws InterruptedException {
-        Scanner scan = new Scanner(System.in);
-        while(true){
-            outbox.put(scan.nextLine());
-        }
     }
 }
