@@ -72,7 +72,7 @@ public class Chat implements Runnable {
 
 	private void updateClientSpaces(String clientIP) {
 		try {
-			Object[] data = clients.queryp(new ActualField(clientIP), new FormalField(String.class));
+			Object[] data = clients.queryp(new ActualField(clientIP), new FormalField(String.class), new FormalField(String.class));
 			if (clientSpaces.get(data[0].toString()) == null)
 				clientSpaces.add(data[0].toString(), SpaceManager.getRemoteSpace(data[0].toString(), data[1].toString(), "localChat"));
 		} catch (InterruptedException | IOException e) {

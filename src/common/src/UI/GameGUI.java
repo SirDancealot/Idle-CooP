@@ -3,8 +3,7 @@ package common.src.UI;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 public class GameGUI extends JFrame implements ActionListener, ListSelectionListener {
 
@@ -29,7 +28,25 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
 
         this.setContentPane(gamePanel);
         this.pack();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        WindowListener exitListen = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	int confirm = JOptionPane.showOptionDialog(
+            	        null, "Want to exit?",
+                        "Exit Confirmation", JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, null, null
+                );
+            	if (confirm == 0) {
+            	    dispose();
+            	    System.exit(0);
+                }
+            }
+        };
+        addWindowListener(exitListen);
+
+
         setTitle("Idle game");
         setBounds(0, 0  , 800, 800);
         setResizable(false);
@@ -87,6 +104,5 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
 
         }
-
     }
 }
