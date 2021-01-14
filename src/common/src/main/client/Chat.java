@@ -50,7 +50,11 @@ public class Chat implements Runnable {
 			String line = sc.nextLine();
 			switch (line) {
 				case "stop":
-					exit();
+					try {
+						remoteChatSpace.put("disconnect", PropManager.getProperty("externalIP"), username);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					stop = true;
 					break;
 				case "ser":
@@ -69,6 +73,13 @@ public class Chat implements Runnable {
 	private void initReader() {
 		localChatSpace = new SequentialSpace();
 		SpaceManager.exposePublicSpace(localChatSpace, "localChat");
+		SpaceManager.addClientExitEvent(() -> {
+			try {
+				localChatSpace.put("stop", true, "CLIENT");
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	private void loopReader() {
@@ -83,6 +94,12 @@ public class Chat implements Runnable {
 
 				if (hostMsg) {
 					switch (msg) {
+						case "stop":
+							try {
+								SpaceManager.getHostSpace("chat").put("disconnect", "", username);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						case "exit":
 							_writer.stop();
 						case "disconnected":
@@ -99,13 +116,6 @@ public class Chat implements Runnable {
 		}
 	}
 
-	private void exit() {
-		try {
-			remoteChatSpace.put("disconnect", PropManager.getProperty("externalIP"));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
 
 	private void writeChat(String msg) {
 		try {

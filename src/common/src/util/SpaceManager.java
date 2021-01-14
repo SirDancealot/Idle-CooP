@@ -5,6 +5,8 @@ import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpaceManager {
 	private static boolean init = false;
@@ -13,6 +15,8 @@ public class SpaceManager {
 	private static SpaceRepository publicSpaceRepo;
 	private static SpaceRepository localSpaceRepo;
 	private static SpaceRepository hostSpaceRepo;
+	private static List<Runnable> clientExitEvents = new ArrayList();
+	private static List<Runnable> hostExitEvents = new ArrayList();
 
 	private SpaceManager() {
 		INSTANCE = this;
@@ -76,6 +80,26 @@ public class SpaceManager {
 		if (!init) {
 			init = true;
 			new SpaceManager();
+		}
+	}
+
+	public static void addClientExitEvent(Runnable r) {
+		clientExitEvents.add(r);
+	}
+
+	public static void exitClient() {
+		for (Runnable r : clientExitEvents) {
+			r.run();
+		}
+	}
+
+	public static void addHostExitEvent(Runnable r) {
+		hostExitEvents.add(r);
+	}
+
+	public static void exitHost() {
+		for (Runnable r : hostExitEvents) {
+			r.run();
 		}
 	}
 }

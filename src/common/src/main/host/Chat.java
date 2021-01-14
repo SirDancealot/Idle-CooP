@@ -13,6 +13,11 @@ public class Chat implements Runnable {
 
 	@Override
 	public void run() {
+		init();
+		loop();
+	}
+
+	private void init() {
 		chatSpace = new SequentialSpace();
 		clientSpaces = new SpaceRepository();
 		SpaceManager.exposeHostSpace(chatSpace, "chat");
@@ -21,7 +26,14 @@ public class Chat implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		loop();
+
+		SpaceManager.addHostExitEvent(() -> {
+			try {
+				chatSpace.put("exit", "", "");
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	private void loop() {
@@ -43,7 +55,7 @@ public class Chat implements Runnable {
 						writeClients(msg, false, uname);
 						break;
 					case "disconnect":
-						removeClient(msg);
+						removeClient(uname);
 						break;
 					case "exit":
 						stop = true;

@@ -1,9 +1,15 @@
 package common.src.UI;
 
+import common.src.util.PropManager;
+import common.src.util.SpaceManager;
+import org.jspace.RemoteSpace;
+import org.jspace.Space;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class GameGUI extends JFrame implements ActionListener, ListSelectionListener {
 
@@ -39,7 +45,12 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
                         JOptionPane.QUESTION_MESSAGE, null, null, null
                 );
             	if (confirm == 0) {
-            	    dispose();
+            	    if (PropManager.getProperty("host") != null) {
+                        SpaceManager.exitHost();
+                    }
+                    SpaceManager.exitClient();
+
+                    dispose();
             	    System.exit(0);
                 }
             }
