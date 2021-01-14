@@ -32,6 +32,8 @@ public class Host implements Runnable {
 			try {
 				Object[] tup = lobby.get(new ActualField("joinReq"), new FormalField(String.class), new FormalField(String.class));
 				clients.put(tup[1].toString(), tup[2].toString());
+				System.out.println("--- Connected ---");
+				System.out.println(tup[1].toString()+":"+ tup[2].toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
