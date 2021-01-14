@@ -39,7 +39,7 @@ public class SetupGUI extends JFrame implements ActionListener {
         if(e.getSource() == connectButton){
 
             //Start backend - add username
-            //new Thread(new App(hostCheckBox.isSelected(),HostIP.getText(),HostPort.getText(),LocalPort.getText(),username.getText())).start();
+            new Thread(new App(hostCheckBox.isSelected(),HostIP.getText().trim(),HostPort.getText().trim(),LocalPort.getText().trim(),username.getText().trim())).start();
 
             //Launch gameGUI
             JFrame gameGUI = new GameGUI();

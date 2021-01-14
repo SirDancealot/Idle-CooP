@@ -1,5 +1,6 @@
 package common.src.main.client;
 
+import common.src.UI.PlayerState;
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
 import org.jspace.FormalField;
@@ -47,11 +48,20 @@ public class Chat implements Runnable {
 		boolean stop = false;
 		while (!stop) {
 			String line = sc.nextLine();
-			if ("stop".equals(line)) {
-				exit();
-				stop = true;
-			} else {
-				writeChat(line);
+			switch (line) {
+				case "stop":
+					exit();
+					stop = true;
+					break;
+				case "ser":
+					try {
+						remoteChatSpace.put(new PlayerState());
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					break;
+				default:
+					writeChat(line);
 			}
 		}
 	}
