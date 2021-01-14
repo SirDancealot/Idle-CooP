@@ -3,59 +3,78 @@ package common.src.UI;
 import java.io.Serializable;
 
 public class PlayerState implements Serializable {
-    private static PlayerState ourInstance = new PlayerState();
 
-    public static PlayerState getInstance() {
-        return ourInstance;
+    private int woodcuttingExp = 0;
+    private int miningExp = 0;
+    private int huntingExp = 0;
+    private int farmingExp = 0;
+    private int constructionExp = 0;
+
+    public PlayerState() {
+
     }
 
-    private int woodcuttingLevel = 0;
-    private int miningLevel = 0;
-    private int huntingLevel = 0;
-    private int farmingLevel = 0;
-    private int constructionLevel = 0;
+    public int getWoodcuttingExp() {
+        return woodcuttingExp;
+    }
 
-    private PlayerState() {
+    public void setWoodcuttingExp(int woodcuttingExp) {
+        this.woodcuttingExp = woodcuttingExp;
+    }
 
+    public int getMiningExp() {
+        return miningExp;
+    }
+
+    public void setMiningExp(int miningExp) {
+        this.miningExp = miningExp;
+    }
+
+    public int getHuntingExp() {
+        return huntingExp;
+    }
+
+    public void setHuntingExp(int huntingExp) {
+        this.huntingExp = huntingExp;
+    }
+
+    public int getFarmingExp() {
+        return farmingExp;
+    }
+
+    public void setFarmingExp(int farmingExp) {
+        this.farmingExp = farmingExp;
+    }
+
+    public int getConstructionExp() {
+        return constructionExp;
+    }
+
+    public void setConstructionExp(int constructionExp) {
+        this.constructionExp = constructionExp;
     }
 
     public int getWoodcuttingLevel() {
-        return woodcuttingLevel;
-    }
-
-    public void setWoodcuttingLevel(int woodcuttingLevel) {
-        this.woodcuttingLevel = woodcuttingLevel;
+        return xpToLevel(woodcuttingExp);
     }
 
     public int getMiningLevel() {
-        return miningLevel;
-    }
-
-    public void setMiningLevel(int miningLevel) {
-        this.miningLevel = miningLevel;
+        return xpToLevel(miningExp);
     }
 
     public int getHunntingLevel() {
-        return huntingLevel;
-    }
-
-    public void setHunntingLevel(int hunntingLevel) {
-        this.huntingLevel = hunntingLevel;
+        return xpToLevel(huntingExp);
     }
 
     public int getFarmingLevel() {
-        return farmingLevel;
-    }
-
-    public void setFarmingLevel(int farmingLevel) {
-        this.farmingLevel = farmingLevel;
+        return xpToLevel(farmingExp);
     }
 
     public int getConstructionLevel() {
-        return constructionLevel;
+        return xpToLevel(constructionExp);
     }
 
-    public void setConstructionLevel(int constructionLevel) {
-        this.constructionLevel = constructionLevel;
+    private static int xpToLevel(int xp){
+        return (int) Math.floor(Math.sqrt(xp));
     }
 }
