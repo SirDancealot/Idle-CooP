@@ -18,6 +18,9 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
     private JLabel coop;
     private JButton startWorkButton;
     private JScrollPane chat;
+    private JTextField chatMsg;
+    private JButton sendMsg;
+    private JLabel chatWindow;
     private DefaultListModel skillList;
 
     GameGUI(){
@@ -26,7 +29,9 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
         this.pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Idle game");
-        setBounds(300, 300, 800, 800);
+        setBounds(0, 0  , 800, 800);
+        setResizable(false);
+
         list1.setLayoutOrientation(JList.VERTICAL);
         list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list1.setSelectedIndex(0);
@@ -46,6 +51,10 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        if(e.getSource() == sendMsg){
+
+            //TODO send msg
+        }
     }
 
     private void getPlayer(){
@@ -59,6 +68,7 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
 
         if(list1.getSelectedValue() == "Woodcutting"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
+            requirements.setText("Requirements: \n You can do this \n alone or with \n a friend");
 
         } else if (list1.getSelectedValue() == "Mining"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
