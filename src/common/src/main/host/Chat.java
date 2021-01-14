@@ -37,6 +37,7 @@ public class Chat implements Runnable {
 				switch (req) {
 					case "joined":
 						updateClientSpaces(msg);
+						System.out.println("Welcome: " + uname);
 						break;
 					case "msg":
 						writeClients(msg, false, uname);
