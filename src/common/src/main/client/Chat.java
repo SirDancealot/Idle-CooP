@@ -36,7 +36,7 @@ public class Chat implements Runnable {
 		new Thread(new Chat(username, true)).start();
 		try {
 			remoteChatSpace = SpaceManager.getHostSpace("chat");
-			remoteChatSpace.put("joined", PropManager.getProperty("externalIP"));
+			remoteChatSpace.put("joined", PropManager.getProperty("externalIP"), username);
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
