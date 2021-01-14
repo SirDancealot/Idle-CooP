@@ -10,17 +10,18 @@ import java.io.IOException;
 
 public class App implements Runnable {
 	private boolean host;
-	private String hostIP, hostPort, localPort;
+	private String hostIP, hostPort, localPort, username;
 
-	public App(boolean host, String hostIP, String hostPort, String localPort) {
+	public App(boolean host, String hostIP, String hostPort, String localPort, String username) {
 		this.host = host;
 		this.hostIP = hostIP;
 		this.hostPort = hostPort;
 		this.localPort = localPort;
+		this.username = username;
 	}
 
 	public static void main(String[] argv) {
-		new Thread(new App(false, "188.178.206.128", "33333", "33333")).start();
+		new Thread(new App(false, "188.178.206.128", "33333", "33333", "Eraisuithon")).start();
 	}
 
 	@Override
@@ -35,6 +36,6 @@ public class App implements Runnable {
 		if(host) {
 			new Thread(new Host()).start();
 		}
-		new Thread(new Client()).start();
+		new Thread(new Client(username)).start();
 	}
 }

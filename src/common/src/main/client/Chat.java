@@ -14,8 +14,10 @@ public class Chat implements Runnable {
 	private Space localChatSpace;
 	private boolean reading;
 	private static Thread _writer;
+	private String username;
 
-	public Chat(boolean reading) {
+	public Chat(String username, boolean reading) {
+		this.username = username;
 		this.reading = reading;
 	}
 
@@ -31,7 +33,7 @@ public class Chat implements Runnable {
 	}
 
 	private void initWriter() {
-		new Thread(new Chat(true)).start();
+		new Thread(new Chat(username, true)).start();
 		try {
 			remoteChatSpace = SpaceManager.getHostSpace("chat");
 			remoteChatSpace.put("joined", PropManager.getProperty("externalIP"));
@@ -64,9 +66,10 @@ public class Chat implements Runnable {
 		Object[] data;
 		while (!stop) {
 			try {
-				data = localChatSpace.get(new FormalField(String.class), new FormalField(Boolean.class));
+				data = localChatSpace.get(new FormalField(String.class), new FormalField(Boolean.class), new FormalField(String.class));
 				String msg = data[0].toString();
 				boolean hostMsg = (boolean)data[1];
+				String user = data[2].toString();
 
 				if (hostMsg) {
 					switch (msg) {
@@ -77,7 +80,7 @@ public class Chat implements Runnable {
 							break;
 					}
 				} else {
-					System.out.println(msg);
+					System.out.println(user + ": " + msg);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

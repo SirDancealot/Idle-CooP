@@ -26,26 +26,27 @@ public class Chat implements Runnable {
 
 	private void loop() {
 		Object[] data;
-		String req, msg;
+		String req, msg, uname;
 		boolean stop = false;
 		while (!stop) {
 			try {
-				data = chatSpace.get(new FormalField(String.class), new FormalField(String.class));
+				data = chatSpace.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
 				req = data[0].toString();
 				msg = data[1].toString();
+				uname = data[2].toString();
 				switch (req) {
 					case "joined":
 						updateClientSpaces(msg);
 						break;
 					case "msg":
-						writeClients(msg, false);
+						writeClients(msg, false, uname);
 						break;
 					case "disconnect":
 						removeClient(msg);
 						break;
 					case "exit":
 						stop = true;
-						writeClients("exit", true);
+						writeClients("exit", true, "HOST");
 						break;
 				}
 			} catch (InterruptedException e) {
@@ -54,13 +55,13 @@ public class Chat implements Runnable {
 		}
 	}
 
-	private void writeClients(String msg, boolean hostMsg) {
+	private void writeClients(String msg, boolean hostMsg, String uname) {
 		try {
 			List<Object[]> clientData = clients.queryAll(new FormalField(String.class), new FormalField(String.class));
 			for (Object[] o : clientData) {
 				Space space = clientSpaces.get(o[0].toString());
 				if (space != null) {
-					space.put(msg, hostMsg);
+					space.put(msg, hostMsg, uname);
 				}
 			}
 		} catch (InterruptedException e) {

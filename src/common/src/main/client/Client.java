@@ -11,7 +11,12 @@ import java.util.Scanner;
 
 public class Client implements Runnable {
 
+    private String username;
     private Space lobby;
+
+    public Client(String username) {
+        this.username = username;
+    }
 
     @Override
     public void run() {
@@ -30,7 +35,7 @@ public class Client implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Thread t = new Thread(new Chat(false));
+        Thread t = new Thread(new Chat(username, false));
         Chat.setWriter(t);
         t.start();
     }
