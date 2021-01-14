@@ -99,7 +99,7 @@ public class Chat implements Runnable {
 
 	private void writeChat(String msg) {
 		try {
-			remoteChatSpace.put("msg", msg);
+			remoteChatSpace.put("msg", msg, username);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
