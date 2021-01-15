@@ -14,6 +14,7 @@ public class Host implements Runnable {
 		clients = new SequentialSpace();
 		SpaceManager.addLocalSpace(clients, "clients");
 		new Thread(new Chat()).start();
+		new Thread(new GameLogic(true)).start();
 	}
 
 	@Override

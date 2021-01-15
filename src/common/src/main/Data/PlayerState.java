@@ -1,4 +1,4 @@
-package common.src.UI;
+package common.src.main.Data;
 
 import java.io.Serializable;
 

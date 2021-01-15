@@ -1,6 +1,6 @@
 package common.src.main.client;
 
-import common.src.UI.PlayerState;
+import common.src.main.Data.PlayerState;
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
 import org.jspace.FormalField;
