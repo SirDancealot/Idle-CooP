@@ -1,6 +1,7 @@
 package common.src.main.host;
 
 import common.src.main.Data.GameState;
+import common.src.main.Data.PlayerState;
 import common.src.util.SpaceManager;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class GameLogic implements Runnable{
 
     private Map <String,Space> unameToSpace = new HashMap<>();
+    private Map <String, PlayerState> unameToPlayerState = new HashMap<>();
     private Space clients;
     private Space gameSpace;
     private GameState gameState;
@@ -38,11 +40,14 @@ public class GameLogic implements Runnable{
 
         if(communicating){
             initCom();
+            loadAllPlayers();
             loopCom();
-            exit();
         } else {
             initWork();
+            loadAllPlayers();
             loopWork();
+            saveAllPlayers();
+            exit();
         }
     }
 
@@ -78,17 +83,42 @@ public class GameLogic implements Runnable{
                 switch (action){
                     case "joined":
                         data = clients.query(new FormalField(String.class), new FormalField(String.class), new ActualField(uname));
-                        unameToSpace.put(uname,SpaceManager.getRemoteSpace(data[0].toString(),data[1].toString(),"localgame"));
-                        //TODO load user
+                        unameToSpace.put(uname,SpaceManager.getRemoteSpace(data[0].toString(),data[1].toString(),"localGame"));
+
+                        if(!unameToPlayerState.containsKey(uname))
+                            unameToPlayerState.put(uname,new PlayerState());
+                        unameToSpace.get(uname).put("playerState",unameToPlayerState.get(uname));
                         break;
+
+                        //TODO update working thread with new player
+
                     case "work":
                         //req job
                         writeToUser(uname, "jobReq");
                         //get job
                         data = gameSpace.get(new ActualField(uname), new ActualField("job"), new FormalField(String.class));
-                        //start job
-                        //TODO start job
+
+                        switch (data[2].toString()){
+                            case "woodCutting":
+                                SpaceManager.getLocalSpace("forest").put(data[0]);
+                                break;
+                            case "mining":
+                                SpaceManager.getLocalSpace("mine").put(data[0]);
+                                break;
+                            case "hunting":
+                                SpaceManager.getLocalSpace("huntingGrounds").put(data[0]);
+                                break;
+                            case "farm":
+                                SpaceManager.getLocalSpace("field").put(data[0]);
+                                break;
+                            case "construction":
+                                SpaceManager.getLocalSpace("constructionSite").put(data[0]);
+                                break;
+                        }
+
+
                         break;
+
                     case "stop":
 
                         break;
@@ -265,4 +295,42 @@ public class GameLogic implements Runnable{
             return 0;
         }
     }
+
+    private void loadAllPlayers(){
+
+        try {
+
+            File dir = new File("/data/players/");
+            for (File file : dir.listFiles()) {
+                FileOutputStream fos = new FileOutputStream(file);
+                ObjectOutput oos = new ObjectOutputStream(fos);
+                PlayerState ps = new PlayerState();
+                oos.writeObject(ps);
+                unameToPlayerState.put(file.getName().split(".")[0],ps);
+                oos.close();
+                fos.close();
+            }
+            
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+    }
+
+    private void saveAllPlayers(){
+
+        Map<String, String> m = new HashMap<>();
+        m.forEach((String key, String value) -> {
+            try{
+                FileOutputStream fos = new FileOutputStream("/data/player/" + key + ".ser");
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(value);
+                oos.close();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        
+    }
+    
 }
