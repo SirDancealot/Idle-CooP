@@ -31,10 +31,17 @@ public class Client implements Runnable {
     private void init() throws IOException {
         lobby = SpaceManager.getHostSpace("lobby");
         try {
-            lobby.put("joinReq", PropManager.getProperty("externalIP"), PropManager.getProperty("localPort"));
+            lobby.put("joinReq", PropManager.getProperty("externalIP"), PropManager.getProperty("localPort"), username);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        SpaceManager.addClientExitEvent(() -> {
+            try {
+                lobby.put("exitReq", PropManager.getProperty("externalIP"), PropManager.getProperty("localPort"), username);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
         Thread t = new Thread(new Chat(username, false));
         Chat.setWriter(t);
         t.start();

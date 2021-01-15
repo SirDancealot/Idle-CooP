@@ -31,10 +31,24 @@ public class Host implements Runnable {
 	private void loop() {
 		while (true) {
 			try {
-				Object[] tup = lobby.get(new ActualField("joinReq"), new FormalField(String.class), new FormalField(String.class));
-				clients.put(tup[1].toString(), tup[2].toString());
-				System.out.println("--- Connected ---");
-				System.out.println(tup[1].toString()+":"+ tup[2].toString());
+				Object[] tup = lobby.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
+				String req, ip, port, user;
+				req = tup[0].toString();
+				ip = tup[1].toString();
+				port = tup[2].toString();
+				user = tup[3].toString();
+				switch (req) {
+					case "joinReq":
+						clients.put(ip, port, user);
+						System.out.println("--- Connected ---");
+						System.out.println(ip + ":" + port);
+						break;
+					case "exitReq":
+						clients.getp(new ActualField(ip), new ActualField(port), new ActualField(user));
+						System.out.println("--- Goodbye ---");
+						System.out.println(ip + ":" + port);
+						break;
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
