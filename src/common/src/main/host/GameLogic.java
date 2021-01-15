@@ -104,27 +104,29 @@ public class GameLogic implements Runnable{
 
                         switch (data[2].toString()){
                             case "woodCutting":
-                                SpaceManager.getLocalSpace("forest").put(data[0]);
+                                forest.put(uname);
                                 break;
                             case "mining":
-                                SpaceManager.getLocalSpace("mine").put(data[0]);
+                                mine.put(uname);
                                 break;
                             case "hunting":
-                                SpaceManager.getLocalSpace("huntingGrounds").put(data[0]);
+                                huntingGrounds.put(uname);
                                 break;
                             case "farm":
-                                SpaceManager.getLocalSpace("field").put(data[0]);
+                                field.put(uname);
                                 break;
                             case "construction":
-                                SpaceManager.getLocalSpace("constructionSite").put(data[0]);
+                                constructionSite.put(uname);
                                 break;
                         }
 
-
                         break;
-
                     case "stop":
-
+                        forest.getp(new ActualField(uname));
+                        mine.getp(new ActualField(uname));
+                        huntingGrounds.getp(new ActualField(uname));
+                        field.getp(new ActualField(uname));
+                        constructionSite.getp(new ActualField(uname));
                         break;
                 }
             } catch (Exception e) {
