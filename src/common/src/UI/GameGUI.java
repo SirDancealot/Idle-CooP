@@ -7,6 +7,11 @@ import org.jspace.Space;
 
 import common.src.main.Data.PlayerState;
 
+import common.src.util.PropManager;
+import common.src.util.SpaceManager;
+import org.jspace.RemoteSpace;
+import org.jspace.Space;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
