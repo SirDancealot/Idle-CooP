@@ -295,11 +295,31 @@ public class GameLogic implements Runnable{
             Map<String, PlayerState> unameToPlayerState = new HashMap<>();
             List<Object[]> playersWorking = workers.queryAll(new FormalField(String.class));
             for (Object[] o : playersWorking) {
-                unameToPlayerState.get(o[0].toString());
+                int level = 0;
+                double random = Math.random() * 100;
+                switch (job) {
+                    case WOODCUTTING:
+                        level =unameToPlayerState.get(o[0].toString()).getWoodcuttingLevel();
+                        break;
+                    case MINING:
+                        level =unameToPlayerState.get(o[0].toString()).getMiningLevel();
+                        break;
+                    case HUNTING:
+                        level =unameToPlayerState.get(o[0].toString()).getHunntingLevel();
+                        break;
+                    case FARMING:
+                        level =unameToPlayerState.get(o[0].toString()).getFarmingLevel();
+                        break;
+                    case CONSTRUCTION:
+                        level =unameToPlayerState.get(o[0].toString()).getConstructionLevel();
+                        break;
+                }
+                if (random < level)
+                    mult *= 2;
             }
 
         } catch (InterruptedException e) {
-            return 1;
+            return mult;
         }
         return mult;
     }
