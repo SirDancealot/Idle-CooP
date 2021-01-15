@@ -22,12 +22,20 @@ public class PlayerState implements Serializable {
         this.woodcuttingExp = woodcuttingExp;
     }
 
+    public void addWoodcuttingExp(int woodcuttingExp) {
+        this.woodcuttingExp += woodcuttingExp;
+    }
+
     public int getMiningExp() {
         return miningExp;
     }
 
     public void setMiningExp(int miningExp) {
         this.miningExp = miningExp;
+    }
+
+    public void addMiningExp(int miningExp) {
+        this.miningExp += miningExp;
     }
 
     public int getHuntingExp() {
@@ -38,6 +46,10 @@ public class PlayerState implements Serializable {
         this.huntingExp = huntingExp;
     }
 
+    public void addHuntingExp(int huntingExp) {
+        this.huntingExp += huntingExp;
+    }
+
     public int getFarmingExp() {
         return farmingExp;
     }
@@ -46,12 +58,20 @@ public class PlayerState implements Serializable {
         this.farmingExp = farmingExp;
     }
 
+    public void addFarmingExp(int farmingExp) {
+        this.farmingExp += farmingExp;
+    }
+
     public int getConstructionExp() {
         return constructionExp;
     }
 
     public void setConstructionExp(int constructionExp) {
         this.constructionExp = constructionExp;
+    }
+
+    public void addConstructionExp(int constructionExp) {
+        this.constructionExp += constructionExp;
     }
 
     public int getWoodcuttingLevel() {
@@ -75,6 +95,6 @@ public class PlayerState implements Serializable {
     }
 
     private static int xpToLevel(int xp){
-        return (int) Math.floor(Math.sqrt(xp));
+        return Math.min((int) Math.floor(Math.sqrt(xp)), 100);
     }
 }

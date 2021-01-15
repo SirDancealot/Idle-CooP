@@ -282,6 +282,7 @@ public class GameLogic implements Runnable{
         woodDmg += workingOn(JOBS.WOODCUTTING);
         if(woodDmg >= woodHP){
             gameState.addWood(extraLoot(JOBS.WOODCUTTING));
+            addExp(JOBS.WOODCUTTING);
             woodDmg %= woodHP;
         }
 
@@ -291,6 +292,7 @@ public class GameLogic implements Runnable{
         }
         if(stoneDmg >= stoneHP){
             gameState.addStone(extraLoot(JOBS.MINING));
+            addExp(JOBS.MINING);
             stoneDmg %= stoneHP;
         }
 
@@ -301,6 +303,7 @@ public class GameLogic implements Runnable{
         }
         if(animalDmg >= animalHP){
             gameState.addMeat(extraLoot(JOBS.HUNTING));
+            addExp(JOBS.HUNTING);
             animalDmg %= animalHP;
         }
 
@@ -310,6 +313,7 @@ public class GameLogic implements Runnable{
 
         if(wheatDmg >= wheatHP){
             gameState.addWheat(6*farmersWorking*extraLoot(JOBS.FARMING));
+            addExp(JOBS.FARMING);
             wheatDmg %= wheatHP;
         }
 
@@ -325,6 +329,7 @@ public class GameLogic implements Runnable{
                 else
                     gameState.addMeat(-1);
 
+                addExp(JOBS.CONSTRUCTION);
                 animalDmg %= animalHP;
             }
         }
@@ -346,26 +351,25 @@ public class GameLogic implements Runnable{
         int mult = 1;
         Space workers = workspaces[job.toInt()];
         try {
-            Map<String, PlayerState> unameToPlayerState = new HashMap<>();
             List<Object[]> playersWorking = workers.queryAll(new FormalField(String.class));
             for (Object[] o : playersWorking) {
                 int level = 0;
                 double random = Math.random() * 100;
                 switch (job) {
                     case WOODCUTTING:
-                        level =unameToPlayerState.get(o[0].toString()).getWoodcuttingLevel();
+                        level = unameToPlayerState.get(o[0].toString()).getWoodcuttingLevel();
                         break;
                     case MINING:
-                        level =unameToPlayerState.get(o[0].toString()).getMiningLevel();
+                        level = unameToPlayerState.get(o[0].toString()).getMiningLevel();
                         break;
                     case HUNTING:
-                        level =unameToPlayerState.get(o[0].toString()).getHunntingLevel();
+                        level = unameToPlayerState.get(o[0].toString()).getHunntingLevel();
                         break;
                     case FARMING:
-                        level =unameToPlayerState.get(o[0].toString()).getFarmingLevel();
+                        level = unameToPlayerState.get(o[0].toString()).getFarmingLevel();
                         break;
                     case CONSTRUCTION:
-                        level =unameToPlayerState.get(o[0].toString()).getConstructionLevel();
+                        level = unameToPlayerState.get(o[0].toString()).getConstructionLevel();
                         break;
                 }
                 if (random < level)
@@ -378,6 +382,33 @@ public class GameLogic implements Runnable{
         return mult;
     }
 
+    private void addExp(JOBS job) {
+        Space workSpace = workspaces[job.toInt()];
+        try {
+            List<Object[]> workers = workSpace.queryAll(new FormalField(String.class));
+            for (Object[] o : workers) {
+                switch (job) {
+                    case WOODCUTTING:
+                        unameToPlayerState.get(o[0].toString()).addWoodcuttingExp(1);
+                        break;
+                    case MINING:
+                        unameToPlayerState.get(o[0].toString()).addMiningExp(1);
+                        break;
+                    case HUNTING:
+                        unameToPlayerState.get(o[0].toString()).addHuntingExp(1);
+                        break;
+                    case FARMING:
+                        unameToPlayerState.get(o[0].toString()).addFarmingExp(1);
+                        break;
+                    case CONSTRUCTION:
+                        unameToPlayerState.get(o[0].toString()).addConstructionExp(1);
+                        break;
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
+    }
 
 }
