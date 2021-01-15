@@ -8,10 +8,12 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +138,9 @@ public class GameLogic implements Runnable{
 
     private void loadAllPlayers(){
         try {
-            File dir = new File("/data/players/");
+            File dir = new File("/data/players");
+            if (!dir.exists())
+                dir.mkdir();
             for (File file : dir.listFiles()) {
                 FileOutputStream fos = new FileOutputStream(file);
                 ObjectOutput oos = new ObjectOutputStream(fos);
