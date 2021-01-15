@@ -32,11 +32,7 @@ public class GameLogic implements Runnable{
     private Space constructionSite;
 
     public GameLogic(Boolean communicating){
-
         this.communicating = communicating;
-
-        gameSpace = new SequentialSpace();
-        SpaceManager.exposeHostSpace(gameSpace, "game");
     }
 
     @Override
@@ -58,6 +54,9 @@ public class GameLogic implements Runnable{
     private void initCom() {
 
         new Thread(new GameLogic(false));
+
+        gameSpace = new SequentialSpace();
+        SpaceManager.exposeHostSpace(gameSpace, "game");
 
         forest = new SequentialSpace();
         mine = new SequentialSpace();
