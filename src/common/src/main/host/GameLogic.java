@@ -133,30 +133,36 @@ public class GameLogic implements Runnable{
         }
     }
 
-    private void loopWork(){
-
-        boolean stop = false;
-
-        long lastNs = System.nanoTime();
-        double dt = 1.0;
-        int missingTicks = 0;
-        double nsPerTick = 100000;
-
-
-        while(!stop){
-
-            long nowNs = System.nanoTime();
-            long deltaNs = nowNs - lastNs;
-            lastNs = nowNs;
-
-            dt += deltaNs / nsPerTick;
-            missingTicks = (int)dt;
-
-            if (missingTicks > 0) {
-                tick();
-                dt--;
+    private void loadAllPlayers(){
+        try {
+            File dir = new File("/data/players/");
+            for (File file : dir.listFiles()) {
+                FileOutputStream fos = new FileOutputStream(file);
+                ObjectOutput oos = new ObjectOutputStream(fos);
+                PlayerState ps = new PlayerState();
+                oos.writeObject(ps);
+                unameToPlayerState.put(file.getName().split(".")[0],ps);
+                oos.close();
+                fos.close();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    private void saveAllPlayers(){
+        Map<String, String> m = new HashMap<>();
+        m.forEach((String key, String value) -> {
+            try{
+                FileOutputStream fos = new FileOutputStream("/data/player/" + key + ".ser");
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(value);
+                oos.close();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void writeToUser(String uname,String req){
@@ -168,32 +174,6 @@ public class GameLogic implements Runnable{
         }
     }
 
-    private void exit(){
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream("/data/GameState.ser");
-            ObjectOutput oos = new ObjectOutputStream(fos);
-            oos.writeObject(gameState);
-            oos.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    Space[] workspaces;
-    private enum JOBS {
-        WOODCUTTING(0), MINING(1), HUNTING(2), FARMING(3), CONSTRUCTION(4);
-        private final int value;
-
-        JOBS(int val) {
-            this.value = val;
-        }
-
-        public int toInt() {
-            return value;
-        }
-    };
     private void initWork() {
 
         try {
@@ -227,72 +207,117 @@ public class GameLogic implements Runnable{
         }
     }
 
+    private void loopWork(){
 
+        boolean stop = false;
+
+        long lastNs = System.nanoTime();
+        double dt = 1.0;
+        int missingTicks = 0;
+        double nsPerTick = 100000;
+
+
+        while(!stop){
+
+            long nowNs = System.nanoTime();
+            long deltaNs = nowNs - lastNs;
+            lastNs = nowNs;
+
+            dt += deltaNs / nsPerTick;
+            missingTicks = (int)dt;
+
+            if (missingTicks > 0) {
+                tick();
+                dt--;
+            }
+        }
+    }
+
+
+
+    private void exit(){
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream("/data/GameState.ser");
+            ObjectOutput oos = new ObjectOutputStream(fos);
+            oos.writeObject(gameState);
+            oos.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    Space[] workspaces;
+    private enum JOBS {
+        WOODCUTTING(0), MINING(1), HUNTING(2), FARMING(3), CONSTRUCTION(4);
+        private final int value;
+
+        JOBS(int val) {
+            this.value = val;
+        }
+
+        public int toInt() {
+            return value;
+        }
+    };
     //Wood stats
     private final int woodHP = 30;
     private int woodDmg = 0;
-
     //Stone stats
     private final int stoneHP = 50;
     private int stoneDmg = 0;
-
     //Animal stats
     private final int animalHP = 600;
     private int animalDmg = 0;
-
     //Field stats
     private final int wheatHP = 6000;
     private int wheatDmg = 0;
-
     //Construction site
     private final int houseHP = 30;
     private int houseDmg = 0;
 
     private void tick(){
-
         //Forest
         woodDmg += workingOn(JOBS.WOODCUTTING);
-
         if(woodDmg >= woodHP){
-
-            gameState.addWood(1);
+            gameState.addWood(extraLoot(JOBS.WOODCUTTING));
             woodDmg %= woodHP;
         }
+
         //Mine
         for (int i = 1; i <= workingOn(JOBS.MINING); i++){
             stoneDmg += i;
         }
-
         if(stoneDmg >= stoneHP){
-
-            gameState.addStone(1);
+            gameState.addStone(extraLoot(JOBS.MINING));
             stoneDmg %= stoneHP;
         }
+
         //Hunting Grounds
         int huntersWorking = workingOn(JOBS.HUNTING);
         if(huntersWorking >= 2){
             animalDmg += huntersWorking;
         }
-
         if(animalDmg >= animalHP){
-
-            gameState.addMeat(1);
+            gameState.addMeat(extraLoot(JOBS.HUNTING));
             animalDmg %= animalHP;
         }
+
         //Fields
         int farmersWorking = workingOn(JOBS.FARMING);
         wheatDmg += farmersWorking;
 
         if(wheatDmg >= wheatHP){
-            gameState.addWheat(6*farmersWorking);
+            gameState.addWheat(6*farmersWorking*extraLoot(JOBS.FARMING));
             wheatDmg %= wheatHP;
         }
+
         //Construction Site
         houseDmg += workingOn(JOBS.CONSTRUCTION);
-
         if(houseDmg >= houseHP){
             if(gameState.getWood() > 0 && gameState.getStone() > 0 && (gameState.getMeat() > 0 || gameState.getWheat() > 0)){
-                gameState.addHouses(1);
+                gameState.addHouses(extraLoot(JOBS.CONSTRUCTION));
                 gameState.addWood(-1);
                 gameState.addStone(-1);
                 if(gameState.getWheat() > 0)
@@ -324,50 +349,35 @@ public class GameLogic implements Runnable{
             Map<String, PlayerState> unameToPlayerState = new HashMap<>();
             List<Object[]> playersWorking = workers.queryAll(new FormalField(String.class));
             for (Object[] o : playersWorking) {
-                unameToPlayerState.get(o[0].toString());
+                int level = 0;
+                double random = Math.random() * 100;
+                switch (job) {
+                    case WOODCUTTING:
+                        level =unameToPlayerState.get(o[0].toString()).getWoodcuttingLevel();
+                        break;
+                    case MINING:
+                        level =unameToPlayerState.get(o[0].toString()).getMiningLevel();
+                        break;
+                    case HUNTING:
+                        level =unameToPlayerState.get(o[0].toString()).getHunntingLevel();
+                        break;
+                    case FARMING:
+                        level =unameToPlayerState.get(o[0].toString()).getFarmingLevel();
+                        break;
+                    case CONSTRUCTION:
+                        level =unameToPlayerState.get(o[0].toString()).getConstructionLevel();
+                        break;
+                }
+                if (random < level)
+                    mult *= 2;
             }
 
         } catch (InterruptedException e) {
-            return 1;
+            return mult;
         }
         return mult;
     }
 
-    private void loadAllPlayers(){
 
-        try {
-
-            File dir = new File("/data/players/");
-            for (File file : dir.listFiles()) {
-                FileOutputStream fos = new FileOutputStream(file);
-                ObjectOutput oos = new ObjectOutputStream(fos);
-                PlayerState ps = new PlayerState();
-                oos.writeObject(ps);
-                unameToPlayerState.put(file.getName().split(".")[0],ps);
-                oos.close();
-                fos.close();
-            }
-
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-    }
-
-    private void saveAllPlayers(){
-
-        Map<String, String> m = new HashMap<>();
-        m.forEach((String key, String value) -> {
-            try{
-                FileOutputStream fos = new FileOutputStream("/data/player/" + key + ".ser");
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(value);
-                oos.close();
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-    }
 
 }
