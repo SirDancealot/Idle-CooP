@@ -9,7 +9,11 @@ import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
 import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GameLogic implements Runnable{
@@ -165,7 +169,6 @@ public class GameLogic implements Runnable{
     }
 
     private void exit(){
-
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream("/data/GameState.ser");
@@ -178,6 +181,19 @@ public class GameLogic implements Runnable{
         }
     }
 
+    Space[] workspaces;
+    private enum JOBS {
+        WOODCUTTING(0), MINING(1), HUNTING(2), FARMING(3), CONSTRUCTION(4);
+        private final int value;
+
+        JOBS(int val) {
+            this.value = val;
+        }
+
+        public int toInt() {
+            return value;
+        }
+    };
     private void initWork() {
 
         try {
@@ -205,10 +221,12 @@ public class GameLogic implements Runnable{
             huntingGrounds = SpaceManager.getLocalSpace("huntingGrounds");
             field = SpaceManager.getLocalSpace("field");
             constructionSite = SpaceManager.getLocalSpace("constructionSite");
+            workspaces = new Space[] {forest, mine, huntingGrounds, field, constructionSite};
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     //Wood stats
     private final int woodHP = 30;
@@ -233,7 +251,7 @@ public class GameLogic implements Runnable{
     private void tick(){
 
         //Forest
-        woodDmg += workingOn(forest);
+        woodDmg += workingOn(JOBS.WOODCUTTING);
 
         if(woodDmg >= woodHP){
 
@@ -241,7 +259,7 @@ public class GameLogic implements Runnable{
             woodDmg %= woodHP;
         }
         //Mine
-        for (int i = 1; i <= workingOn(mine); i++){
+        for (int i = 1; i <= workingOn(JOBS.MINING); i++){
             stoneDmg += i;
         }
 
@@ -251,8 +269,9 @@ public class GameLogic implements Runnable{
             stoneDmg %= stoneHP;
         }
         //Hunting Grounds
-        if(workingOn(huntingGrounds) >= 2){
-            animalDmg += workingOn(huntingGrounds);
+        int huntersWorking = workingOn(JOBS.HUNTING);
+        if(huntersWorking >= 2){
+            animalDmg += huntersWorking;
         }
 
         if(animalDmg >= animalHP){
@@ -261,14 +280,15 @@ public class GameLogic implements Runnable{
             animalDmg %= animalHP;
         }
         //Fields
-        wheatDmg += workingOn(field);
+        int farmersWorking = workingOn(JOBS.FARMING);
+        wheatDmg += farmersWorking;
 
         if(wheatDmg >= wheatHP){
-            gameState.addWheat(6*workingOn(field));
+            gameState.addWheat(6*farmersWorking);
             wheatDmg %= wheatHP;
         }
         //Construction Site
-        houseDmg += workingOn(constructionSite);
+        houseDmg += workingOn(JOBS.CONSTRUCTION);
 
         if(houseDmg >= houseHP){
             if(gameState.getWood() > 0 && gameState.getStone() > 0 && (gameState.getMeat() > 0 || gameState.getWheat() > 0)){
@@ -285,8 +305,8 @@ public class GameLogic implements Runnable{
         }
     }
 
-    private int workingOn(Space workers){
-
+    private int workingOn(JOBS job){
+        Space workers = workspaces[job.toInt()];
         try {
             return workers.queryAll(new FormalField(String.class)).size();
         } catch (InterruptedException e) {
@@ -294,6 +314,23 @@ public class GameLogic implements Runnable{
             e.printStackTrace();
             return 0;
         }
+    }
+
+
+    private int extraLoot(JOBS job) {
+        int mult = 1;
+        Space workers = workspaces[job.toInt()];
+        try {
+            Map<String, PlayerState> unameToPlayerState = new HashMap<>();
+            List<Object[]> playersWorking = workers.queryAll(new FormalField(String.class));
+            for (Object[] o : playersWorking) {
+                unameToPlayerState.get(o[0].toString());
+            }
+
+        } catch (InterruptedException e) {
+            return 1;
+        }
+        return mult;
     }
 
     private void loadAllPlayers(){
@@ -310,7 +347,7 @@ public class GameLogic implements Runnable{
                 oos.close();
                 fos.close();
             }
-            
+
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -330,7 +367,7 @@ public class GameLogic implements Runnable{
                 e.printStackTrace();
             }
         });
-        
+
     }
-    
+
 }
