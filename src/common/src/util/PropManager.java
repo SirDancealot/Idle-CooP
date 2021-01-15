@@ -3,7 +3,6 @@ package common.src.util;
 import java.io.*;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -12,16 +11,9 @@ public class PropManager {
 	private static Properties props;
 	private static boolean init = false;
 
-	private PropManager() throws IOException {
+	private PropManager() {
 		INSTANCE = this;
 		props = new Properties();
-		InputStream propIS = getClass().getClassLoader().getResourceAsStream("config.properties");
-
-		if (propIS != null) {
-			props.load(propIS);
-		} else {
-			throw new FileNotFoundException("Property file not found");
-		}
 	}
 
 	public static String getProperty(String key) {
@@ -32,7 +24,7 @@ public class PropManager {
 		props.setProperty(key, value);
 	}
 
-	public static PropManager getINSTANCE() throws IOException {
+	public static PropManager getINSTANCE() {
 		if (INSTANCE == null)
 			return new PropManager();
 		return INSTANCE;

@@ -57,7 +57,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="33334"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="61ebe" class="javax.swing.JTextField" binding="HostPort">
@@ -67,7 +67,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="33333"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="16810" class="javax.swing.JLabel">
@@ -83,6 +83,8 @@
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <enabled value="true"/>
+          <selected value="false"/>
           <text value="Host"/>
         </properties>
       </component>
@@ -93,7 +95,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="Fipzz"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="e3a4b" class="javax.swing.JLabel">
