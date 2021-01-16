@@ -2,11 +2,8 @@ package common.src.main.client;
 
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
-import org.jspace.RemoteSpace;
 import org.jspace.Space;
-
 import java.io.IOException;
-import java.util.Scanner;
 
 
 public class Client implements Runnable {

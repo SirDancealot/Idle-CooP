@@ -1,19 +1,15 @@
 package common.src.main.host;
 
-import common.src.UI.GameGUI;
 import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
 import common.src.util.FileManager;
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
-import org.jspace.ActualField;
-import org.jspace.FormalField;
-import org.jspace.SequentialSpace;
-import org.jspace.Space;
+import org.jspace.*;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameLogic implements Runnable{
 
@@ -39,14 +35,11 @@ public class GameLogic implements Runnable{
     public void run() {
         if(communicating){
             initCom();
-            //loadAllPlayers();
             loopCom();
         } else {
             initWork();
-            //loadAllPlayers();
             loopWork();
-            saveAllPlayers();
-            exit();
+            saveAll();
         }
     }
 
@@ -69,14 +62,15 @@ public class GameLogic implements Runnable{
         SpaceManager.addLocalSpace(constructionSite,"constructionSite");
     }
 
+    private AtomicBoolean stopCom = new AtomicBoolean(false);
     private void loopCom(){
 
         Object[] data;
         String uname, action;
 
-        boolean stop = false;
+        SpaceManager.addHostExitEvent(() -> stopCom.set(true));
 
-        while(!stop){
+        while(!stopCom.get()){
             try {
                 data = gameSpace.get(new FormalField(String.class), new FormalField(String.class));
                 uname = data[0].toString();
@@ -137,6 +131,12 @@ public class GameLogic implements Runnable{
                 e.printStackTrace();
             }
         }
+        unameToSpace.forEach((String key, Space value) -> {
+            writeToUser(key, "exit");
+            try {
+                ((RemoteSpace)value).close();
+            } catch (IOException ignore) { }
+        });
     }
 
     private PlayerState loadPlayer (String username) {
@@ -144,24 +144,15 @@ public class GameLogic implements Runnable{
         return (ps != null ? ps : new PlayerState());
     }
 
-    private void loadAllPlayers(){
-        File dir = new File("./data/players");
-        if (!dir.exists())
-            dir.mkdir();
-        for (File file : dir.listFiles()) {
-            PlayerState ps = FileManager.loadObject("./data/players" + file.getName());
-            unameToPlayerState.put(file.getName().split(".")[0],ps);
-        }
-    }
-
     private void savePlayer(String username) {
         FileManager.saveObject("./data/player" + username + ".ser", unameToPlayerState.get(username));
     }
 
-    private void saveAllPlayers(){
+    private void saveAll(){
         unameToPlayerState.forEach((String key, PlayerState value) -> {
             FileManager.saveObject("./data/player/" + key + ".ser", value);
         });
+        FileManager.saveObject("./data/GameState.ser", gameState);
     }
 
     private void writeToUser(String uname, String req){
@@ -210,9 +201,9 @@ public class GameLogic implements Runnable{
         }
     }
 
-    private boolean stopWork = false;
+    private AtomicBoolean stopWork = new AtomicBoolean(false);
     private void loopWork(){
-        SpaceManager.addHostExitEvent(() -> stopWork = true);
+        SpaceManager.addHostExitEvent(() -> stopWork.set(true));
 
         long ticks = 0;
         long startTime = System.nanoTime();
@@ -223,7 +214,7 @@ public class GameLogic implements Runnable{
         int missingTicks;
         double nsPerTick = nsPerSec/TPS;
 
-        while(!stopWork){
+        while(!stopWork.get()){
             long nowNs = System.nanoTime();
             long deltaNs = nowNs - lastNs;
             lastNs = nowNs;
@@ -243,18 +234,6 @@ public class GameLogic implements Runnable{
                     }
                 }
             }
-        }
-    }
-
-    private void exit(){
-        try {
-            FileOutputStream fos = new FileOutputStream("./data/GameState.ser");
-            ObjectOutput oos = new ObjectOutputStream(fos);
-            oos.writeObject(gameState);
-            oos.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
