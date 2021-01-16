@@ -23,7 +23,7 @@ public class Host implements Runnable {
 		lobby = new SequentialSpace();
 		SpaceManager.exposeHostSpace(lobby, "lobby");
 		new Thread(new Chat()).start();
-		new Thread(new GameLogic(true)).start();
+		new Thread(new HostLogic(true)).start();
 	}
 
 	private void loop() {
