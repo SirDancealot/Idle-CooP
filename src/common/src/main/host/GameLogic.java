@@ -2,24 +2,20 @@ package common.src.main.host;
 
 import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
+import common.src.util.FileManager;
+import common.src.util.PropManager;
 import common.src.util.SpaceManager;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
-import javax.swing.*;
 import java.io.*;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameLogic implements Runnable{
 
+    private static Vector<Runnable> jobs = new Vector<>();
     private Map <String,Space> unameToSpace = new HashMap<>();
     private Map <String, PlayerState> unameToPlayerState = new HashMap<>();
     private Space clients;
@@ -39,14 +35,13 @@ public class GameLogic implements Runnable{
 
     @Override
     public void run() {
-
         if(communicating){
             initCom();
-            loadAllPlayers();
+            //loadAllPlayers();
             loopCom();
         } else {
             initWork();
-            loadAllPlayers();
+            //loadAllPlayers();
             loopWork();
             saveAllPlayers();
             exit();
@@ -54,8 +49,7 @@ public class GameLogic implements Runnable{
     }
 
     private void initCom() {
-
-        new Thread(new GameLogic(false));
+        new Thread(new GameLogic(false)).start();
 
         gameSpace = new SequentialSpace();
         SpaceManager.exposeHostSpace(gameSpace, "game");
@@ -85,14 +79,16 @@ public class GameLogic implements Runnable{
                 data = gameSpace.get(new FormalField(String.class), new FormalField(String.class));
                 uname = data[0].toString();
                 action = data[1].toString();
+                String finalUname = uname;
                 switch (action){
                     case "joined":
                         data = clients.query(new FormalField(String.class), new FormalField(String.class), new ActualField(uname));
                         unameToSpace.put(uname,SpaceManager.getRemoteSpace(data[0].toString(),data[1].toString(),"localGame"));
-
-                        if(!unameToPlayerState.containsKey(uname))
-                            unameToPlayerState.put(uname,new PlayerState());
+                        unameToPlayerState.put(uname, loadPlayer(uname));
                         unameToSpace.get(uname).put("playerState",unameToPlayerState.get(uname));
+                        jobs.add(() -> {
+                            unameToPlayerState.put(finalUname, loadPlayer(finalUname));
+                        });
                         break;
 
                         //TODO update working thread with new player
@@ -122,6 +118,11 @@ public class GameLogic implements Runnable{
                         }
 
                         break;
+                    case "disconnect":
+                        jobs.add(() -> {
+                            savePlayer(finalUname);
+                        });
+                        unameToSpace.remove(finalUname);
                     case "stop":
                         forest.getp(new ActualField(uname));
                         mine.getp(new ActualField(uname));
@@ -136,42 +137,32 @@ public class GameLogic implements Runnable{
         }
     }
 
+    private PlayerState loadPlayer (String username) {
+        PlayerState ps = FileManager.loadObject("./data/players/" + username + ".ser");
+        return (ps != null ? ps : new PlayerState());
+    }
+
     private void loadAllPlayers(){
-        try {
-            File dir = new File("/data/players");
-            if (!dir.exists())
-                dir.mkdir();
-            for (File file : dir.listFiles()) {
-                FileOutputStream fos = new FileOutputStream(file);
-                ObjectOutput oos = new ObjectOutputStream(fos);
-                PlayerState ps = new PlayerState();
-                oos.writeObject(ps);
-                unameToPlayerState.put(file.getName().split(".")[0],ps);
-                oos.close();
-                fos.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        File dir = new File("./data/players");
+        if (!dir.exists())
+            dir.mkdir();
+        for (File file : dir.listFiles()) {
+            PlayerState ps = FileManager.loadObject("./data/players" + file.getName());
+            unameToPlayerState.put(file.getName().split(".")[0],ps);
         }
     }
 
+    private void savePlayer(String username) {
+        FileManager.saveObject("./data/player" + username + ".ser", unameToPlayerState.get(username));
+    }
+
     private void saveAllPlayers(){
-        Map<String, String> m = new HashMap<>();
-        m.forEach((String key, String value) -> {
-            try{
-                FileOutputStream fos = new FileOutputStream("/data/player/" + key + ".ser");
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(value);
-                oos.close();
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        unameToPlayerState.forEach((String key, PlayerState value) -> {
+            FileManager.saveObject("./data/player/" + key + ".ser", value);
         });
     }
 
-    private void writeToUser(String uname,String req){
-
+    private void writeToUser(String uname, String req){
         try {
             unameToSpace.get(uname).put(req);
         } catch (InterruptedException e) {
@@ -180,6 +171,7 @@ public class GameLogic implements Runnable{
     }
 
     private void initWork() {
+        System.out.println("init work");
 
         try {
             clients = SpaceManager.getLocalSpace("clients");
@@ -189,11 +181,15 @@ public class GameLogic implements Runnable{
         }
 
         try {
-            FileInputStream fis = new FileInputStream("/data/GameState.ser");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            gameState = (GameState) ois.readObject();
-            ois.close();
-            fis.close();
+            File gameStateFile = new File("./data/GameState.ser");
+            if (gameStateFile.exists()) {
+                FileInputStream fis = new FileInputStream("./data/GameState.ser");
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                gameState = (GameState) ois.readObject();
+                ois.close();
+                fis.close();
+            } else
+                gameState = new GameState();
         } catch (IOException e) {
             gameState = new GameState();
         } catch (ClassNotFoundException c) {
@@ -212,18 +208,22 @@ public class GameLogic implements Runnable{
         }
     }
 
+    private boolean stopWork = false;
     private void loopWork(){
+        SpaceManager.addHostExitEvent(() -> {
+            stopWork = true;
+        });
 
-        boolean stop = false;
-
+        long ticks = 0;
+        long startTime = System.nanoTime();
+        final double nsPerSec = 1000000000;
+        final double TPS = 10;
         long lastNs = System.nanoTime();
         double dt = 1.0;
-        int missingTicks = 0;
-        double nsPerTick = 100000;
+        int missingTicks;
+        double nsPerTick = nsPerSec/TPS;
 
-
-        while(!stop){
-
+        while(!stopWork){
             long nowNs = System.nanoTime();
             long deltaNs = nowNs - lastNs;
             lastNs = nowNs;
@@ -232,18 +232,26 @@ public class GameLogic implements Runnable{
             missingTicks = (int)dt;
 
             if (missingTicks > 0) {
+                ticks++;
                 tick();
-                dt--;
+                dt -= 1.0;
+                String debug = PropManager.getProperty("debug");
+                if (debug != null) {
+                    if (debug.equals("true")) {
+                        System.out.println("Tick: " + ticks);
+                        System.out.println("TPS: " + (ticks/((nowNs-startTime)/nsPerSec)));
+                    }
+                }
             }
         }
     }
 
 
 
+
     private void exit(){
-        FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream("/data/GameState.ser");
+            FileOutputStream fos = new FileOutputStream("./data/GameState.ser");
             ObjectOutput oos = new ObjectOutputStream(fos);
             oos.writeObject(gameState);
             oos.close();
@@ -283,6 +291,10 @@ public class GameLogic implements Runnable{
     private int houseDmg = 0;
 
     private void tick(){
+    	if (jobs.size() > 0) {
+    	    jobs.remove(jobs.size() - 1).run();
+        }
+
         //Forest
         woodDmg += workingOn(JOBS.WOODCUTTING);
         if(woodDmg >= woodHP){

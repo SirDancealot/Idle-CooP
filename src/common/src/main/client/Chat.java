@@ -64,6 +64,17 @@ public class Chat implements Runnable {
 						e.printStackTrace();
 					}
 					break;
+				case "d":
+				case "debug":
+					String debug = PropManager.getProperty("debug");
+					if (debug != null) {
+						if (debug.equals("true"))
+							PropManager.setProperty("debug", "false");
+						else
+							PropManager.setProperty("debug", "true");
+					} else
+						PropManager.setProperty("debug", "true");
+					break;
 				default:
 					writeChat(line);
 			}

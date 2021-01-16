@@ -1,8 +1,8 @@
 package common.src.UI;
 
 import common.src.main.App;
+import common.src.util.FileManager;
 
-import javax.naming.spi.DirectoryManager;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,19 +30,11 @@ public class SetupGUI extends JFrame implements ActionListener {
         connectButton.addActionListener(this);
         hostCheckBox.addActionListener(this);
 
-        LastOptions lastOptions = null;
-
-        File directory = new File("/data");
+        File directory = new File("./data");
         if(!directory.exists())
             directory.mkdir();
 
-        try {
-            FileInputStream fis = new FileInputStream("/data/LastOptions.ser");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            lastOptions = (LastOptions) ois.readObject();
-            ois.close();
-            fis.close();
-        } catch (IOException | ClassNotFoundException ignored) { }
+        LastOptions lastOptions = FileManager.loadObject("./data/LastOptions.ser");
 
         if (lastOptions != null) {
             hostCheckBox.setSelected(lastOptions.isHost());
@@ -71,17 +63,13 @@ public class SetupGUI extends JFrame implements ActionListener {
             new Thread(new App(hostCheckBox.isSelected(),HostIP.getText().trim(),HostPort.getText().trim(),LocalPort.getText().trim(),username.getText().trim())).start();
 
             try {
-                FileOutputStream fos = new FileOutputStream("/data/LastOptions.ser");
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
                 LastOptions thisOptions = new LastOptions();
                 thisOptions.setHost(hostCheckBox.isSelected());
                 thisOptions.setHostIp(HostIP.getText());
                 thisOptions.setHostPort(HostPort.getText());
                 thisOptions.setLocalPort(LocalPort.getText());
                 thisOptions.setUsername(username.getText());
-                oos.writeObject(thisOptions);
-                oos.close();
-                fos.close();
+                FileManager.saveObject("./data/LastOptions.ser", thisOptions);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

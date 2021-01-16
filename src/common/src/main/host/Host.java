@@ -3,8 +3,6 @@ package common.src.main.host;
 import common.src.util.SpaceManager;
 import org.jspace.*;
 
-import java.io.IOException;
-
 public class Host implements Runnable {
 
 	private Space lobby;
@@ -13,8 +11,6 @@ public class Host implements Runnable {
 	public Host() {
 		clients = new SequentialSpace();
 		SpaceManager.addLocalSpace(clients, "clients");
-		new Thread(new Chat()).start();
-		new Thread(new GameLogic(true)).start();
 	}
 
 	@Override
@@ -26,6 +22,8 @@ public class Host implements Runnable {
 	private void init() {
 		lobby = new SequentialSpace();
 		SpaceManager.exposeHostSpace(lobby, "lobby");
+		new Thread(new Chat()).start();
+		new Thread(new GameLogic(true)).start();
 	}
 
 	private void loop() {
