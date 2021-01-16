@@ -43,7 +43,7 @@ public class ClientLogic implements Runnable{
 
         while(!stop){
 
-            
+
         }
     }
 }
