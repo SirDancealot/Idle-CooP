@@ -18,8 +18,12 @@ public class SetupGUI extends JFrame implements ActionListener {
     private JCheckBox hostCheckBox;
     private JTextField username;
 
-    public SetupGUI (){
+    public static void main(String[] args) {
+        JFrame frame = new SetupGUI();
+        frame.setVisible(true);
+    }
 
+    SetupGUI (){
         this.setContentPane(setupPanel);
         this.pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,32 +51,20 @@ public class SetupGUI extends JFrame implements ActionListener {
             LocalPort.setText(lastOptions.getLocalPort());
             username.setText(lastOptions.getUsername());
         }
-
-    }
-
-    public static void main(String[] args) {
-
-        JFrame frame = new SetupGUI();
-        frame.setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == connectButton){
 
-            //Start backend - add username
             new Thread(new App(hostCheckBox.isSelected(),HostIP.getText().trim(),HostPort.getText().trim(),LocalPort.getText().trim(),username.getText().trim())).start();
 
-            try {
-                LastOptions thisOptions = new LastOptions();
-                thisOptions.setHost(hostCheckBox.isSelected());
-                thisOptions.setHostIp(HostIP.getText());
-                thisOptions.setHostPort(HostPort.getText());
-                thisOptions.setLocalPort(LocalPort.getText());
-                thisOptions.setUsername(username.getText());
-                FileManager.saveObject("./data/LastOptions.ser", thisOptions);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            LastOptions thisOptions = new LastOptions();
+            thisOptions.setHost(hostCheckBox.isSelected());
+            thisOptions.setHostIp(HostIP.getText());
+            thisOptions.setHostPort(HostPort.getText());
+            thisOptions.setLocalPort(LocalPort.getText());
+            thisOptions.setUsername(username.getText());
+            FileManager.saveObject("./data/LastOptions.ser", thisOptions);
 
             //Launch gameGUI
             JFrame gameGUI = new GameGUI();

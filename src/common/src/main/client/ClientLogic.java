@@ -1,9 +1,15 @@
 package common.src.main.client;
 
+import common.src.UI.GameGUI;
+import common.src.main.Data.GameState;
+import common.src.main.Data.PlayerState;
 import common.src.util.SpaceManager;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 public class ClientLogic implements Runnable{
@@ -14,6 +20,8 @@ public class ClientLogic implements Runnable{
 
     private Space gameSpace;
     private Space userSpace;
+    private GameState gs;
+    private PlayerState ps;
     private String uname;
 
     public ClientLogic(String uname){
@@ -42,7 +50,6 @@ public class ClientLogic implements Runnable{
         boolean stop = false;
 
         while(!stop){
-
 
         }
     }

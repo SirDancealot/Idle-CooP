@@ -2,23 +2,21 @@ package common.src.UI;
 
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
-import org.jspace.RemoteSpace;
-import org.jspace.Space;
 
 import common.src.main.Data.PlayerState;
-
-import common.src.util.PropManager;
-import common.src.util.SpaceManager;
-import org.jspace.RemoteSpace;
-import org.jspace.Space;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.*;
-import java.io.IOException;
 
-public class GameGUI extends JFrame implements ActionListener, ListSelectionListener {
+public class GameGUI extends JFrame implements ListSelectionListener {
+
+    private static GameGUI _INSTANCE;
+
+    public static GameGUI getInstance() {
+        return  _INSTANCE;
+    }
 
     private JPanel gamePanel;
     private JList list1;
@@ -33,11 +31,70 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
     private JTextField chatMsg;
     private JButton sendMsg;
     private JLabel chatWindow;
-    private DefaultListModel skillList;
 
     private PlayerState player;
 
+    public class setProgress implements Runnable {
+        private final int wood;
+        private final int stone;
+        private final int animal;
+        private final int wheat;
+        private final int house;
+        private final boolean workProgress;
+
+        public setProgress(int wood, int stone, int animal, int wheat, int house, boolean workProgress) {
+            this.wood = wood;
+            this.stone = stone;
+            this.animal = animal;
+            this.wheat = wheat;
+            this.house = house;
+            this.workProgress = workProgress;
+        }
+
+        @Override
+        public void run() {
+        	JProgressBar pBar = (workProgress ? progressBar2 : progressBar1);
+            switch (list1.getSelectedValue().toString()) {
+                case "Woodcutting":
+                    pBar.setValue(wood);
+                    break;
+                case "Mining":
+                    pBar.setValue(stone);
+                    break;
+                case "Hunting":
+                    pBar.setValue(animal);
+                    break;
+                case "Farming":
+                    pBar.setValue(wheat);
+                    break;
+                case "Construction":
+                    pBar.setValue(house);
+                    break;
+            }
+        }
+    }
+
+    public class addListener implements Runnable {
+
+        private final ActionListener a;
+        private final boolean workButton;
+
+        public addListener(ActionListener a, boolean workButton) {
+            this.a = a;
+            this.workButton = workButton;
+        }
+
+        @Override
+        public void run() {
+            if (workButton)
+                startWorkButton.addActionListener(a);
+            else
+                sendMsg.addActionListener(a);
+        }
+    }
+
     GameGUI(){
+        GameGUI._INSTANCE = this;
 
         this.setContentPane(gamePanel);
         this.pack();
@@ -69,12 +126,7 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
         setBounds(0, 0  , 800, 800);
         setResizable(false);
 
-        list1.setLayoutOrientation(JList.VERTICAL);
-        list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list1.setSelectedIndex(0);
-        list1.addListSelectionListener(this);
-
-        skillList = new DefaultListModel();
+        DefaultListModel<String> skillList = new DefaultListModel<>();
         skillList.addElement("Woodcutting");
         skillList.addElement("Mining");
         skillList.addElement("Hunting");
@@ -83,28 +135,14 @@ public class GameGUI extends JFrame implements ActionListener, ListSelectionList
 
         list1.setModel(skillList);
 
-        getPlayer();
-
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        if(e.getSource() == sendMsg){
-
-            //TODO send msg
-        }
-    }
-
-    private void getPlayer(){
-
-        //TODO get player info
-
+        list1.setLayoutOrientation(JList.VERTICAL);
+        list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list1.setSelectedIndex(0);
+        list1.addListSelectionListener(this);
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-
         if(list1.getSelectedValue() == "Woodcutting"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
             requirements.setText("Requirements: ");

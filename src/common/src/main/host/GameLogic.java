@@ -1,5 +1,6 @@
 package common.src.main.host;
 
+import common.src.UI.GameGUI;
 import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
 import common.src.util.FileManager;
@@ -10,6 +11,7 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
@@ -210,9 +212,7 @@ public class GameLogic implements Runnable{
 
     private boolean stopWork = false;
     private void loopWork(){
-        SpaceManager.addHostExitEvent(() -> {
-            stopWork = true;
-        });
+        SpaceManager.addHostExitEvent(() -> stopWork = true);
 
         long ticks = 0;
         long startTime = System.nanoTime();
@@ -245,9 +245,6 @@ public class GameLogic implements Runnable{
             }
         }
     }
-
-
-
 
     private void exit(){
         try {
@@ -291,6 +288,7 @@ public class GameLogic implements Runnable{
     private int houseDmg = 0;
 
     private void tick(){
+
     	if (jobs.size() > 0) {
     	    jobs.remove(jobs.size() - 1).run();
         }
@@ -363,7 +361,6 @@ public class GameLogic implements Runnable{
         }
     }
 
-
     private int extraLoot(JOBS job) {
         int mult = 1;
         Space workers = workspaces[job.toInt()];
@@ -392,10 +389,7 @@ public class GameLogic implements Runnable{
                 if (random < level)
                     mult *= 2;
             }
-
-        } catch (InterruptedException e) {
-            return mult;
-        }
+        } catch (InterruptedException ignore) { }
         return mult;
     }
 
@@ -425,7 +419,6 @@ public class GameLogic implements Runnable{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
 }
