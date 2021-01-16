@@ -7,6 +7,7 @@ import org.jspace.SpaceRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class SpaceManager {
 	private static boolean init = false;
@@ -15,8 +16,8 @@ public class SpaceManager {
 	private static SpaceRepository publicSpaceRepo;
 	private static SpaceRepository localSpaceRepo;
 	private static SpaceRepository hostSpaceRepo;
-	private static List<Runnable> clientExitEvents = new ArrayList();
-	private static List<Runnable> hostExitEvents = new ArrayList();
+	private static Vector<Runnable> clientExitEvents = new Vector<>();
+	private static Vector<Runnable> hostExitEvents = new Vector();
 
 	private SpaceManager() {
 		INSTANCE = this;
