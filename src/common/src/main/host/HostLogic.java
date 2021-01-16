@@ -6,12 +6,15 @@ import common.src.main.Data.PlayerState;
 import common.src.main.GameCalculations;
 import common.src.util.FileManager;
 import common.src.util.SpaceManager;
+import org.jspace.*;
+
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HostLogic implements Runnable{
 
@@ -37,14 +40,11 @@ public class HostLogic implements Runnable{
     public void run() {
         if(communicating){
             initCom();
-            //loadAllPlayers();
             loopCom();
         } else {
             initWork();
-            //loadAllPlayers();
             loopWork();
-            saveAllPlayers();
-            exit();
+            saveAll();
         }
     }
 
@@ -67,14 +67,15 @@ public class HostLogic implements Runnable{
         SpaceManager.exposeHostSpace(constructionSite,"constructionSite");
     }
 
+    private AtomicBoolean stopCom = new AtomicBoolean(false);
     private void loopCom(){
 
         Object[] data;
         String uname, action;
 
-        boolean stop = false;
+        SpaceManager.addHostExitEvent(() -> stopCom.set(true));
 
-        while(!stop){
+        while(!stopCom.get()){
             try {
                 data = gameSpace.get(new FormalField(String.class), new FormalField(String.class));
                 uname = data[0].toString();
@@ -135,6 +136,12 @@ public class HostLogic implements Runnable{
                 e.printStackTrace();
             }
         }
+        unameToSpace.forEach((String key, Space value) -> {
+            writeToUser(key, "exit");
+            try {
+                ((RemoteSpace)value).close();
+            } catch (IOException ignore) { }
+        });
     }
 
     private PlayerState loadPlayer (String username) {
@@ -142,24 +149,15 @@ public class HostLogic implements Runnable{
         return (ps != null ? ps : new PlayerState());
     }
 
-    private void loadAllPlayers(){
-        File dir = new File("./data/players");
-        if (!dir.exists())
-            dir.mkdir();
-        for (File file : dir.listFiles()) {
-            PlayerState ps = FileManager.loadObject("./data/players" + file.getName());
-            unameToPlayerState.put(file.getName().split(".")[0],ps);
-        }
-    }
-
     private void savePlayer(String username) {
         FileManager.saveObject("./data/player" + username + ".ser", unameToPlayerState.get(username));
     }
 
-    private void saveAllPlayers(){
+    private void saveAll(){
         unameToPlayerState.forEach((String key, PlayerState value) -> {
             FileManager.saveObject("./data/player/" + key + ".ser", value);
         });
+        FileManager.saveObject("./data/GameState.ser", gameState);
     }
 
     private void writeToUser(String uname, String req){
@@ -207,30 +205,17 @@ public class HostLogic implements Runnable{
         }
     }
 
-    private boolean stopWork = false;
+    private AtomicBoolean stopWork = new AtomicBoolean(false);
     private void loopWork(){
-        SpaceManager.addHostExitEvent(() -> stopWork = true);
+        SpaceManager.addHostExitEvent(() -> stopWork.set(true));
 
         GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState);
-        while(!stopWork){
 
+        while (!stopWork.get()) {
             if (jobs.size() > 0) {
                 jobs.remove(jobs.size() - 1).run();
             }
-
             gameCalculations.update();
-        }
-    }
-
-    private void exit(){
-        try {
-            FileOutputStream fos = new FileOutputStream("./data/GameState.ser");
-            ObjectOutput oos = new ObjectOutputStream(fos);
-            oos.writeObject(gameState);
-            oos.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
