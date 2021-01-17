@@ -170,23 +170,27 @@ public class GameCalculations {
         try {
             List<Object[]> playersWorking = workers.queryAll(new FormalField(String.class));
             for (Object[] o : playersWorking) {
+                //TODO fix extra loot for client-side
+                PlayerState ps = unameToPlayerState.get(o[0].toString());
+                if (ps == null)
+                    continue;
                 int level = 0;
                 double random = Math.random() * 100;
                 switch (job) {
                     case WOODCUTTING:
-                        level = unameToPlayerState.get(o[0].toString()).getWoodcuttingLevel();
+                        level = ps.getWoodcuttingLevel();
                         break;
                     case MINING:
-                        level = unameToPlayerState.get(o[0].toString()).getMiningLevel();
+                        level = ps.getMiningLevel();
                         break;
                     case HUNTING:
-                        level = unameToPlayerState.get(o[0].toString()).getHunntingLevel();
+                        level = ps.getHunntingLevel();
                         break;
                     case FARMING:
-                        level = unameToPlayerState.get(o[0].toString()).getFarmingLevel();
+                        level = ps.getFarmingLevel();
                         break;
                     case CONSTRUCTION:
-                        level = unameToPlayerState.get(o[0].toString()).getConstructionLevel();
+                        level = ps.getConstructionLevel();
                         break;
                 }
                 if (random < level)
@@ -201,21 +205,24 @@ public class GameCalculations {
         try {
             List<Object[]> workers = workSpace.queryAll(new FormalField(String.class));
             for (Object[] o : workers) {
+                PlayerState ps = unameToPlayerState.get(o[0].toString());
+                if (ps == null)
+                    continue;
                 switch (job) {
                     case WOODCUTTING:
-                        unameToPlayerState.get(o[0].toString()).addWoodcuttingExp(1);
+                        ps.addWoodcuttingExp(1);
                         break;
                     case MINING:
-                        unameToPlayerState.get(o[0].toString()).addMiningExp(1);
+                        ps.addMiningExp(1);
                         break;
                     case HUNTING:
-                        unameToPlayerState.get(o[0].toString()).addHuntingExp(1);
+                        ps.addHuntingExp(1);
                         break;
                     case FARMING:
-                        unameToPlayerState.get(o[0].toString()).addFarmingExp(1);
+                        ps.addFarmingExp(1);
                         break;
                     case CONSTRUCTION:
-                        unameToPlayerState.get(o[0].toString()).addConstructionExp(1);
+                        ps.addConstructionExp(1);
                         break;
                 }
             }
