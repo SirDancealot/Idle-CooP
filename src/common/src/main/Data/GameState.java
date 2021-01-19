@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class GameState implements Serializable {
 
+    private static final long serialVersionUID = 69L;
+
     private int wood;
     private int stone;
     private int meat;
