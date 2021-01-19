@@ -55,6 +55,7 @@ public class GameCalculations {
         missingTicks = (int)dt;
 
         if (missingTicks > 0) {
+            long tickStart = System.nanoTime();
             ticks++;
             tick();
 
@@ -66,15 +67,15 @@ public class GameCalculations {
                         gameState.getWheatDmgP(),
                         gameState.getHouseDmgP(),
                         "setHP"));
-                    PlayerState ps = unameToPlayerState.get(PropManager.getProperty("username"));
-                    SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
-                            ps.getWoodcuttingProgress(),
-                            ps.getMiningProgress(),
-                            ps.getHuntingProgress(),
-                            ps.getFarmingProgress(),
-                            ps.getConstructionProgress(),
-                            "setLvl"
-                    ));
+                PlayerState ps = unameToPlayerState.get(PropManager.getProperty("username"));
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                        ps.getWoodcuttingProgress(),
+                        ps.getMiningProgress(),
+                        ps.getHuntingProgress(),
+                        ps.getFarmingProgress(),
+                        ps.getConstructionProgress(),
+                        "setLvl"
+                ));
 
                 if (updateGuiRequired) {
                     SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
@@ -88,13 +89,14 @@ public class GameCalculations {
                 }
                 updateGuiRequired = false;
             }
-
+            long tickEnd = System.nanoTime();
             dt -= 1.0;
             String debug = PropManager.getProperty("debug");
             if (debug != null) {
                 if (debug.equals("true")) {
                     System.out.println("Tick: " + ticks);
                     System.out.println("TPS: " + (ticks/((nowNs-startTime)/nsPerSec)));
+                    System.out.println("Tick-time: " + ((tickEnd - tickStart)/nsPerSec));
                 }
             }
         }
