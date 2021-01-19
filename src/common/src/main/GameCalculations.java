@@ -104,6 +104,7 @@ public class GameCalculations {
 
         //Forest
         woodDmg += workingOn(GameCalculations.JOBS.WOODCUTTING);
+        System.out.println(woodDmg);
         if(woodDmg >= woodHP){
             gameState.addWood(extraLoot(GameCalculations.JOBS.WOODCUTTING));
             addExp(GameCalculations.JOBS.WOODCUTTING);
@@ -161,9 +162,12 @@ public class GameCalculations {
 
     private int workingOn(JOBS job){
         Space workers = workspaces[job.toInt()];
+        System.out.println(workers);
         try {
-            return workers.queryAll(new FormalField(String.class)).size();
+            List<Object[]> workerList = workers.queryAll(new FormalField(String.class));
+            return workerList.size();
         } catch (Exception e) {
+            e.printStackTrace();
             return 0;
         }
     }

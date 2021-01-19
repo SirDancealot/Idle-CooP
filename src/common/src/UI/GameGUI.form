@@ -63,7 +63,7 @@
           </grid>
         </constraints>
         <properties>
-          <maximum value="30"/>
+          <maximum value="100"/>
         </properties>
       </component>
       <component id="bbec3" class="javax.swing.JProgressBar" binding="progressBar1" default-binding="true">

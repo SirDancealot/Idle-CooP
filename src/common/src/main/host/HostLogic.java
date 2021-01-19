@@ -180,11 +180,11 @@ public class HostLogic implements Runnable{
             gameState = new GameState();
 
         try {
-            forest = SpaceManager.getLocalSpace("forest");
-            mine = SpaceManager.getLocalSpace("mine");
-            huntingGrounds = SpaceManager.getLocalSpace("huntingGrounds");
-            field = SpaceManager.getLocalSpace("field");
-            constructionSite = SpaceManager.getLocalSpace("constructionSite");
+            forest = SpaceManager.getHostSpace("forest");
+            mine = SpaceManager.getHostSpace("mine");
+            huntingGrounds = SpaceManager.getHostSpace("huntingGrounds");
+            field = SpaceManager.getHostSpace("field");
+            constructionSite = SpaceManager.getHostSpace("constructionSite");
         } catch (IOException e) {
             e.printStackTrace();
         }

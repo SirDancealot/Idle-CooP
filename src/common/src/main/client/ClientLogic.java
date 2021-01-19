@@ -12,6 +12,7 @@ import org.jspace.Space;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,12 +63,6 @@ public class ClientLogic implements Runnable{
             gameSpace = SpaceManager.getHostSpace("game");
             gameSpace.put(uname,"joined");
 
-            forest = SpaceManager.getHostSpace("forest");
-            mine = SpaceManager.getHostSpace("mine");
-            huntingGrounds = SpaceManager.getHostSpace("huntingGrounds");
-            field = SpaceManager.getHostSpace("field");
-            constructionSite = SpaceManager.getHostSpace("constructionSite");
-
             Object[] data;
             data = userSpace.get(new ActualField("gameState"), new FormalField(GameState.class));
             gameState = (GameState) data[1];
@@ -117,6 +112,15 @@ public class ClientLogic implements Runnable{
     private void initWork(){
         unameToPlayerState = new HashMap<>();
         unameToPlayerState.put(uname,playerState);
+        try {
+            forest = SpaceManager.getHostSpace("forest");
+            mine = SpaceManager.getHostSpace("mine");
+            huntingGrounds = SpaceManager.getHostSpace("huntingGrounds");
+            field = SpaceManager.getHostSpace("field");
+            constructionSite = SpaceManager.getHostSpace("constructionSite");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean stopWork = false;
