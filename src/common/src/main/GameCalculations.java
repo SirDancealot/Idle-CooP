@@ -115,13 +115,9 @@ public class GameCalculations {
 
                     List<String>[] workerList = new List[]{new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()};
                     for (int i = 0; i < 5; i++) {
-                        try {
-                            List<Object[]> data = workspaces[i].queryAll(new FormalField(String.class));
-                            for (Object[] o : data) {
-                                workerList[i].add(o[0].toString());
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                        List<Object[]> data = workers[i];
+                        for (Object[] o : data) {
+                            workerList[i].add(o[0].toString());
                         }
                     }
 
@@ -160,13 +156,25 @@ public class GameCalculations {
         }
     };
 
+    List<Object[]>[] workers;
     private void tick(){
+        try {
+            workers = new List[]{
+                    forest.queryAll(new FormalField(String.class)),
+                    mine.queryAll(new FormalField(String.class)),
+                    huntingGrounds.queryAll(new FormalField(String.class)),
+                    field.queryAll(new FormalField(String.class)),
+                    constructionSite.queryAll(new FormalField(String.class)),
+            };
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         //Forest
         int woodDmg = gameState.getWoodDmg();
         int woodHP = GameState.woodHP;
         woodDmg += workingOn(GameCalculations.JOBS.WOODCUTTING);
         if(woodDmg >= woodHP){
-            gameState.addWood(extraLoot(GameCalculations.JOBS.WOODCUTTING));
+            gameState.addWood(1);
             addExp(GameCalculations.JOBS.WOODCUTTING);
             woodDmg %= woodHP;
             updateGuiRequired = true;
@@ -180,7 +188,7 @@ public class GameCalculations {
             stoneDmg += i;
         }
         if(stoneDmg >= stoneHP){
-            gameState.addStone(extraLoot(GameCalculations.JOBS.MINING));
+            gameState.addStone(1);
             addExp(GameCalculations.JOBS.MINING);
             stoneDmg %= stoneHP;
             updateGuiRequired = true;
@@ -195,7 +203,7 @@ public class GameCalculations {
             animalDmg += huntersWorking;
         }
         if(animalDmg >= animalHP){
-            gameState.addMeat(extraLoot(GameCalculations.JOBS.HUNTING));
+            gameState.addMeat(1);
             addExp(GameCalculations.JOBS.HUNTING);
             animalDmg %= animalHP;
             updateGuiRequired = true;
@@ -209,7 +217,7 @@ public class GameCalculations {
         wheatDmg += farmersWorking;
 
         if(wheatDmg >= wheatHP){
-            gameState.addWheat(6*farmersWorking*extraLoot(GameCalculations.JOBS.FARMING));
+            gameState.addWheat(6*farmersWorking);
             addExp(GameCalculations.JOBS.FARMING);
             wheatDmg %= wheatHP;
             updateGuiRequired = true;
@@ -222,7 +230,7 @@ public class GameCalculations {
         houseDmg += workingOn(GameCalculations.JOBS.CONSTRUCTION);
         if(houseDmg >= houseHP){
             if(gameState.getWood() > 0 && gameState.getStone() > 0 && (gameState.getMeat() > 0 || gameState.getWheat() > 0)){
-                gameState.addHouses(extraLoot(GameCalculations.JOBS.CONSTRUCTION));
+                gameState.addHouses(1);
                 gameState.addWood(-1);
                 gameState.addStone(-1);
                 if(gameState.getWheat() > 0)
@@ -240,9 +248,8 @@ public class GameCalculations {
     }
 
     private int workingOn(JOBS job){
-        Space workers = workspaces[job.toInt()];
         try {
-            List<Object[]> workerList = workers.queryAll(new FormalField(String.class));
+            List<Object[]> workerList = workers[job.toInt()];
             return workerList.size();
         } catch (Exception e) {
             e.printStackTrace();
@@ -252,68 +259,60 @@ public class GameCalculations {
 
     private int extraLoot(JOBS job) {
         int mult = 1;
-        Space workers = workspaces[job.toInt()];
-        try {
-            List<Object[]> playersWorking = workers.queryAll(new FormalField(String.class));
-            for (Object[] o : playersWorking) {
-                //TODO fix extra loot for client-side
-                PlayerState ps = unameToPlayerState.get(o[0].toString());
-                if (ps == null)
-                    continue;
-                int level = 0;
-                double random = Math.random() * 100;
-                switch (job) {
-                    case WOODCUTTING:
-                        level = ps.getWoodcuttingLevel();
-                        break;
-                    case MINING:
-                        level = ps.getMiningLevel();
-                        break;
-                    case HUNTING:
-                        level = ps.getHunntingLevel();
-                        break;
-                    case FARMING:
-                        level = ps.getFarmingLevel();
-                        break;
-                    case CONSTRUCTION:
-                        level = ps.getConstructionLevel();
-                        break;
-                }
-                if (random < level)
-                    mult *= 2;
+        List<Object[]> playersWorking = workers[job.toInt()];
+        for (Object[] o : playersWorking) {
+            //TODO fix extra loot for client-side
+            PlayerState ps = unameToPlayerState.get(o[0].toString());
+            if (ps == null)
+                continue;
+            int level = 0;
+            double random = Math.random() * 100;
+            switch (job) {
+                case WOODCUTTING:
+                    level = ps.getWoodcuttingLevel();
+                    break;
+                case MINING:
+                    level = ps.getMiningLevel();
+                    break;
+                case HUNTING:
+                    level = ps.getHunntingLevel();
+                    break;
+                case FARMING:
+                    level = ps.getFarmingLevel();
+                    break;
+                case CONSTRUCTION:
+                    level = ps.getConstructionLevel();
+                    break;
             }
-        } catch (InterruptedException ignore) { }
+            if (random < level)
+                mult *= 2;
+        }
         return mult;
     }
 
     private void addExp(JOBS job) {
-        Space workSpace = workspaces[job.toInt()];
-        try {
-            List<Object[]> workers = workSpace.queryAll(new FormalField(String.class));
-            for (Object[] o : workers) {
-                PlayerState ps = unameToPlayerState.get(o[0].toString());
-                if (ps == null)
-                    continue;
-                switch (job) {
-                    case WOODCUTTING:
-                        ps.addWoodcuttingExp(1);
-                        break;
-                    case MINING:
-                        ps.addMiningExp(1);
-                        break;
-                    case HUNTING:
-                        ps.addHuntingExp(1);
-                        break;
-                    case FARMING:
-                        ps.addFarmingExp(1);
-                        break;
-                    case CONSTRUCTION:
-                        ps.addConstructionExp(1);
-                        break;
-                }
+        List<Object[]> data = workers[job.toInt()];
+        for (Object[] o : data) {
+            PlayerState ps = unameToPlayerState.get(o[0].toString());
+            if (ps == null)
+                continue;
+            switch (job) {
+                case WOODCUTTING:
+                    ps.addWoodcuttingExp(1);
+                    break;
+                case MINING:
+                    ps.addMiningExp(1);
+                    break;
+                case HUNTING:
+                    ps.addHuntingExp(1);
+                    break;
+                case FARMING:
+                    ps.addFarmingExp(1);
+                    break;
+                case CONSTRUCTION:
+                    ps.addConstructionExp(1);
+                    break;
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }

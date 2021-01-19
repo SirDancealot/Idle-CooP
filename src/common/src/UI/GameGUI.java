@@ -192,6 +192,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         setResizable(false);
 
         playersAtTask.setLayoutOrientation(JList.VERTICAL);
+        playersAtTask.setSelectionModel(new NoSelectionModel());
         DefaultListModel<String> skillList = new DefaultListModel<>();
         skillList.addElement("Woodcutting");
         skillList.addElement("Mining");
