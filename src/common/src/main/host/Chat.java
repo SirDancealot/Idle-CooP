@@ -70,7 +70,7 @@ public class Chat implements Runnable {
 
 	private void writeClients(String msg, boolean hostMsg, String uname) {
 		try {
-			List<Object[]> clientData = clients.queryAll(new FormalField(String.class), new FormalField(String.class));
+			List<Object[]> clientData = clients.queryAll(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
 			for (Object[] o : clientData) {
 				Space space = clientSpaces.get(o[0].toString());
 				if (space != null) {

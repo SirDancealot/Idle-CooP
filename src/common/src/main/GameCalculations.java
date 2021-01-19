@@ -157,9 +157,7 @@ public class GameCalculations {
         Space workers = workspaces[job.toInt()];
         try {
             return workers.queryAll(new FormalField(String.class)).size();
-        } catch (InterruptedException e) {
-            System.out.println("No workers could be found");
-            e.printStackTrace();
+        } catch (Exception e) {
             return 0;
         }
     }

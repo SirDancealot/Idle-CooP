@@ -107,11 +107,11 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="13dad" class="javax.swing.JLabel" binding="chatWindow">
+          <component id="75217" class="javax.swing.JTextArea" binding="chatArea">
             <constraints/>
             <properties>
-              <text value="Chat:"/>
-              <verticalAlignment value="1"/>
+              <editable value="false"/>
+              <enabled value="true"/>
             </properties>
           </component>
         </children>

@@ -30,7 +30,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     private JScrollPane chat;
     private JTextField chatMsg;
     private JButton sendMsg;
-    private JLabel chatWindow;
+    private JTextArea chatArea;
 
     private PlayerState player;
 
@@ -159,6 +159,18 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         }else if (list1.getSelectedValue() == "Construction"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
 
+        }
+    }
+
+    public class addChatMessage implements Runnable {
+        String msg;
+        public addChatMessage(String msg) {
+            this.msg = msg;
+        }
+
+        @Override
+        public void run() {
+            chatArea.append(msg + "\n");
         }
     }
 }
