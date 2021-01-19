@@ -104,7 +104,6 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         };
         addWindowListener(exitListen);
 
-
         setTitle("Idle game");
         setBounds(0, 0  , 800, 800);
         setResizable(false);
@@ -121,6 +120,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         list1.setLayoutOrientation(JList.VERTICAL);
         list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list1.setSelectedIndex(0);
+        CurrentSkill.setText(CurrentSkill.getText()+ " " + list1.getSelectedValue().toString());
         list1.addListSelectionListener(this);
 
         sendMsg.addActionListener((ActionEvent e) -> {
