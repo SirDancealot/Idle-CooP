@@ -58,10 +58,12 @@ public class ClientLogic implements Runnable{
             gameSpace.put(uname,"joined");
             SpaceManager.addClientExitEvent(() -> {
                 try {
+                    gameSpace.put(uname,"disconnect");
                     ((RemoteSpace)gameSpace).close();
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
+                stopCom = true;
             });
 
             Object[] data;
@@ -78,19 +80,8 @@ public class ClientLogic implements Runnable{
     }
     boolean stopCom = false;
     private void loopCom(){
-
         Object[] data;
-        SpaceManager.addClientExitEvent(()-> {
-            try {
-                gameSpace.put(uname,"disconnect");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            stopCom = true;
-        });
-
         while(!stopCom){
-
             try {
                 data = GUIjob.get(new FormalField(String.class));
                 startWorkAtHost(data[0].toString());
