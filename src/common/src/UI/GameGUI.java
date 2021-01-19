@@ -52,35 +52,50 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         private final int animal;
         private final int wheat;
         private final int house;
-        private final boolean workProgress;
+        private final String task;
 
-        public setProgress(int wood, int stone, int animal, int wheat, int house, boolean workProgress) {
+        public setProgress(int wood, int stone, int animal, int wheat, int house, String task) {
             this.wood = wood;
             this.stone = stone;
             this.animal = animal;
             this.wheat = wheat;
             this.house = house;
-            this.workProgress = workProgress;
+            this.task = task;
         }
 
         @Override
         public void run() {
-        	JProgressBar pBar = (workProgress ? progressBar2 : progressBar1);
-            switch (list1.getSelectedValue().toString()) {
-                case "Woodcutting":
-                    pBar.setValue(wood);
+
+        	JProgressBar pBar;
+            pBar = progressBar1;
+            switch (task){
+                case "setHp":
+                    pBar = progressBar2;
+                case"setLvl":
+                    switch (list1.getSelectedValue().toString()) {
+                        case "Woodcutting":
+                            pBar.setValue(wood);
+                            break;
+                        case "Mining":
+                            pBar.setValue(stone);
+                            break;
+                        case "Hunting":
+                            pBar.setValue(animal);
+                            break;
+                        case "Farming":
+                            pBar.setValue(wheat);
+                            break;
+                        case "Construction":
+                            pBar.setValue(house);
+                            break;
+                    }
                     break;
-                case "Mining":
-                    pBar.setValue(stone);
-                    break;
-                case "Hunting":
-                    pBar.setValue(animal);
-                    break;
-                case "Farming":
-                    pBar.setValue(wheat);
-                    break;
-                case "Construction":
-                    pBar.setValue(house);
+                case "setRes":
+                    totalwood.setText("Wood: " + wood);
+                    totalstone.setText("Stone: " + stone);
+                    totalmeat.setText("Meat: " + animal);
+                    totalwheat.setText("Wheat: " + wheat);
+                    totalhouses.setText("Houses: " + house);
                     break;
             }
         }

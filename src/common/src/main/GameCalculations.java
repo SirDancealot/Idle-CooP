@@ -58,7 +58,13 @@ public class GameCalculations {
             tick();
 
             if (updateGUI) {
-                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(gameState.getWoodDmgP(), gameState.getStoneDmgP(),gameState.getAnimalDmgP(),gameState.getWheatDmgP(),gameState.getHouseDmg(),true));
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                        gameState.getWoodDmgP(),
+                        gameState.getStoneDmgP(),
+                        gameState.getAnimalDmgP(),
+                        gameState.getWheatDmgP(),
+                        gameState.getHouseDmg(),
+                        "setHP"));
                 PlayerState ps = unameToPlayerState.get(PropManager.getProperty("username"));
                 SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
                         ps.getWoodcuttingProgress(),
@@ -66,7 +72,16 @@ public class GameCalculations {
                         ps.getHuntingProgress(),
                         ps.getFarmingProgress(),
                         ps.getConstructionProgress(),
-                        false
+                        "setLvl"
+                ));
+
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                        gameState.getWood(),
+                        gameState.getStone(),
+                        gameState.getMeat(),
+                        gameState.getWheat(),
+                        gameState.getHouses(),
+                        "setRes"
                 ));
             }
 
