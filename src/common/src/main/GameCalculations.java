@@ -8,6 +8,7 @@ import org.jspace.FormalField;
 import org.jspace.Space;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,11 +65,6 @@ public class GameCalculations {
             ticks++;
             tick();
             if (updateGUI) {
-                nowWood = workingOn(JOBS.WOODCUTTING);
-                nowStone = workingOn(JOBS.MINING);
-                nowAnimal = workingOn(JOBS.HUNTING);
-                nowWheat = workingOn(JOBS.FARMING);
-                nowHouse = workingOn(JOBS.CONSTRUCTION);
                 SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
                         gameState.getWoodDmgP(),
                         gameState.getStoneDmgP(),
@@ -106,12 +102,30 @@ public class GameCalculations {
                         "setLvl"
                 ));
 
+                nowWood = workingOn(JOBS.WOODCUTTING);
+                nowStone = workingOn(JOBS.MINING);
+                nowAnimal = workingOn(JOBS.HUNTING);
+                nowWheat = workingOn(JOBS.FARMING);
+                nowHouse = workingOn(JOBS.CONSTRUCTION);
                 if (lastWood != nowWood ||
                     lastStone != nowStone ||
                     lastAnimal != nowAnimal ||
                     lastWheat != nowWheat ||
                     lastHouse != nowHouse) {
 
+                    List<String>[] workerList = new List[]{new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()};
+                    for (int i = 0; i < 5; i++) {
+                        try {
+                            List<Object[]> data = workspaces[i].queryAll(new FormalField(String.class));
+                            for (Object[] o : data) {
+                                workerList[i].add(o[0].toString());
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    SwingUtilities.invokeLater(GameGUI.getInstance().new setWorkers(workerList));
                 }
 
                 lastWood = nowWood;

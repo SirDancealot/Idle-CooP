@@ -13,9 +13,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.Vector;
 
 public class GameGUI extends JFrame implements ListSelectionListener {
 
@@ -45,7 +47,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     private JLabel totalhouses;
     private JLabel CurrentLvl;
     private JTextPane jobInfo;
-    private JList playersAtTask;
+    private JList<String> playersAtTask;
 
     private PlayerState player;
     private Space hostChat, GUIjob;
@@ -124,52 +126,36 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         }
     }
 
-    DefaultListModel<String> woodList = new DefaultListModel<>();
-    DefaultListModel<String> stoneList = new DefaultListModel<>();
-    DefaultListModel<String> animalList = new DefaultListModel<>();
-    DefaultListModel<String> wheatList = new DefaultListModel<>();
-    DefaultListModel<String> houseList = new DefaultListModel<>();
+    private Vector<String>[] workerList = new Vector[]{new Vector(), new Vector(), new Vector(), new Vector(), new Vector()};
     public class setWorkers implements Runnable {
-        private final List<Object[]> woodWorkers;
-        private final List<Object[]> stoneWorkers;
-        private final List<Object[]> animalWorkers;
-        private final List<Object[]> wheatWorkers;
-        private final List<Object[]> houseWorkers;
+        private List<String>[] workers;
 
-        public setWorkers(List<Object[]> woodWorkers,
-                          List<Object[]> stoneWorkers,
-                          List<Object[]> animalWorkers,
-                          List<Object[]> wheatWorkers,
-                          List<Object[]> houseWorkers) {
-
-            this.woodWorkers = woodWorkers;
-            this.stoneWorkers = stoneWorkers;
-            this.animalWorkers = animalWorkers;
-            this.wheatWorkers = wheatWorkers;
-            this.houseWorkers = houseWorkers;
+        public setWorkers(List<String>[] workers) {
+            this.workers = workers;
         }
 
         @Override
         public void run() {
-            woodList.clear();
-            for (Object[] o : woodWorkers) {
-                woodList.addElement(o[0].toString());
+            for (int i = 0; i < 5; i++) {
+                workerList[i].clear();
+                workerList[i].addAll(workers[i]);
             }
-            stoneList.clear();
-            for (Object[] o : stoneWorkers) {
-                stoneList.addElement(o[0].toString());
-            }
-            animalList.clear();
-            for (Object[] o : animalWorkers) {
-                animalList.addElement(o[0].toString());
-            }
-            wheatList.clear();
-            for (Object[] o : woodWorkers) {
-                wheatList.addElement(o[0].toString());
-            }
-            houseList.clear();
-            for (Object[] o : houseWorkers) {
-                houseList.addElement(o[0].toString());
+            switch (list1.getSelectedValue()) {
+                case "Woodcutting":
+                    playersAtTask.setListData(workerList[0]);
+                    break;
+                case "Mining":
+                    playersAtTask.setListData(workerList[1]);
+                    break;
+                case "Hunting":
+                    playersAtTask.setListData(workerList[2]);
+                    break;
+                case "Farming":
+                    playersAtTask.setListData(workerList[3]);
+                    break;
+                case "Construction":
+                    playersAtTask.setListData(workerList[4]);
+                    break;
             }
         }
     }
@@ -205,6 +191,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         setBounds(0, 0  , 1000, 800);
         setResizable(false);
 
+        playersAtTask.setLayoutOrientation(JList.VERTICAL);
         DefaultListModel<String> skillList = new DefaultListModel<>();
         skillList.addElement("Woodcutting");
         skillList.addElement("Mining");
@@ -270,19 +257,23 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         if(list1.getSelectedValue() == "Woodcutting"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
             jobInfo.setText("Collect wood in the forrest. Bringing a friend will make this task faster!");
-
+            playersAtTask.setListData(workerList[0]);
         } else if (list1.getSelectedValue() == "Mining"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
             jobInfo.setText("Collect stone in the mine. Bringing a friend will make this task faster, and bringing more is even better!");
+            playersAtTask.setListData(workerList[1]);
         }else if (list1.getSelectedValue() == "Hunting"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
             jobInfo.setText("Go hunting in the woods. You need a hunting partner to do this task!");
+            playersAtTask.setListData(workerList[2]);
         }else if (list1.getSelectedValue() == "Farming"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
             jobInfo.setText("Farming the lush fields. Farming is slow but gives a lot of food. This task is faster and gives more, the more players that are working on it!");
+            playersAtTask.setListData(workerList[3]);
         }else if (list1.getSelectedValue() == "Construction"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
             jobInfo.setText("You need wood, stone and some form of food to complete this task!");
+            playersAtTask.setListData(workerList[4]);
         }
     }
 
