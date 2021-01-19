@@ -1,6 +1,5 @@
 package common.src.main.client;
 
-import common.src.UI.GameGUI;
 import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
 import common.src.main.GameCalculations;
@@ -9,9 +8,6 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

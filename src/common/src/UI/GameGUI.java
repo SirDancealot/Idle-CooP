@@ -7,8 +7,12 @@ import common.src.main.Data.PlayerState;
 import org.jspace.Space;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 
@@ -33,6 +37,11 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     private JTextField chatMsg;
     private JButton sendMsg;
     private JTextArea chatArea;
+    private JLabel totalwood;
+    private JLabel totalstone;
+    private JLabel totalmeat;
+    private JLabel totalwheat;
+    private JLabel totalhouses;
 
     private PlayerState player;
     private Space hostChat, GUIjob;
@@ -43,35 +52,53 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         private final int animal;
         private final int wheat;
         private final int house;
-        private final boolean workProgress;
+        private final String task;
 
-        public setProgress(int wood, int stone, int animal, int wheat, int house, boolean workProgress) {
+        public setProgress(int wood, int stone, int animal, int wheat, int house, String task) {
             this.wood = wood;
             this.stone = stone;
             this.animal = animal;
             this.wheat = wheat;
             this.house = house;
-            this.workProgress = workProgress;
+            this.task = task;
         }
 
         @Override
         public void run() {
-        	JProgressBar pBar = (workProgress ? progressBar2 : progressBar1);
-            switch (list1.getSelectedValue().toString()) {
-                case "Woodcutting":
-                    pBar.setValue(wood);
+
+        	JProgressBar pBar;
+            pBar = progressBar1;
+            switch (task){
+                case "setHP":
+                    pBar = progressBar2;
+                case"setLvl":
+                    switch (list1.getSelectedValue().toString()) {
+                        case "Woodcutting":
+                            pBar.setValue(wood);
+                            break;
+                        case "Mining":
+                            pBar.setValue(stone);
+                            break;
+                        case "Hunting":
+                            pBar.setValue(animal);
+                            break;
+                        case "Farming":
+                            pBar.setValue(wheat);
+                            break;
+                        case "Construction":
+                            pBar.setValue(house);
+                            break;
+                    }
                     break;
-                case "Mining":
-                    pBar.setValue(stone);
+                case "setRes":
+                    totalwood.setText("Wood: " + wood);
+                    totalstone.setText("Stone: " + stone);
+                    totalmeat.setText("Meat: " + animal);
+                    totalwheat.setText("Wheat: " + wheat);
+                    totalhouses.setText("Houses: " + house);
                     break;
-                case "Hunting":
-                    pBar.setValue(animal);
-                    break;
-                case "Farming":
-                    pBar.setValue(wheat);
-                    break;
-                case "Construction":
-                    pBar.setValue(house);
+                default:
+                    System.out.println("something went wrong");
                     break;
             }
         }
@@ -105,7 +132,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         addWindowListener(exitListen);
 
         setTitle("Idle game");
-        setBounds(0, 0  , 800, 800);
+        setBounds(0, 0  , 1000, 800);
         setResizable(false);
 
         DefaultListModel<String> skillList = new DefaultListModel<>();
@@ -116,12 +143,18 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         skillList.addElement("Construction");
 
         list1.setModel(skillList);
-
         list1.setLayoutOrientation(JList.VERTICAL);
         list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list1.setSelectedIndex(0);
         CurrentSkill.setText(CurrentSkill.getText()+ " " + list1.getSelectedValue().toString());
         list1.addListSelectionListener(this);
+        Border margin = new EmptyBorder(10,10,10,10);
+        totalwood.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        totalstone.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        totalmeat.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        totalwheat.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        totalhouses.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        chatArea.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
 
         sendMsg.addActionListener((ActionEvent e) -> {
         	if (hostChat == null) {
