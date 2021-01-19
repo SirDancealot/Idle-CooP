@@ -102,21 +102,20 @@ public class HostLogic implements Runnable{
                         writeToUser(uname, "jobReq");
                         //get job
                         data = gameSpace.get(new ActualField(uname), new ActualField("job"), new FormalField(String.class));
-
                         switch (data[2].toString()){
-                            case "woodCutting":
+                            case "Woodcutting":
                                 forest.put(uname);
                                 break;
-                            case "mining":
+                            case "Mining":
                                 mine.put(uname);
                                 break;
-                            case "hunting":
+                            case "Hunting":
                                 huntingGrounds.put(uname);
                                 break;
-                            case "farm":
+                            case "Farming":
                                 field.put(uname);
                                 break;
-                            case "construction":
+                            case "Construction":
                                 constructionSite.put(uname);
                                 break;
                         }

@@ -84,18 +84,29 @@ public class ClientLogic implements Runnable{
     private void loopCom(){
 
         Object[] data;
-        String uname;
-        SpaceManager.addClientExitEvent(()-> stopCom = true);
+        SpaceManager.addClientExitEvent(()-> {
+            try {
+                gameSpace.put(uname,"disconnect");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            stopCom = true;
+        });
 
         while(!stopCom){
 
-
+            try {
+                data = GUIjob.get(new FormalField(String.class));
+                startWorkAtHost(data[0].toString());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private void startWorkAtHost(String job){
         try {
-            gameSpace.put(uname,"state");
+            gameSpace.put(uname,"work");
             userSpace.get(new ActualField("jobReq"));
             gameSpace.put(uname,"job",job);
         } catch (InterruptedException e) {
