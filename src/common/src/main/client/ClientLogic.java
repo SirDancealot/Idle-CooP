@@ -106,11 +106,11 @@ public class ClientLogic implements Runnable{
         unameToPlayerState.put(uname,playerState);
     }
 
+    boolean stop = false;
     private void loopWork(){
 
-        boolean stop = false;
         GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState,true);
-
+        SpaceManager.addClientExitEvent(() -> { stop = true; });
         while (!stop){
 
             gameCalculations.update();
