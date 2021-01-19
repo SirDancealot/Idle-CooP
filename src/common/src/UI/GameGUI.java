@@ -222,13 +222,6 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         	if (hostChat == null) {
                 try {
                     hostChat = SpaceManager.getHostSpace("chat");
-                    SpaceManager.addClientExitEvent(() -> {
-                        try {
-                            ((RemoteSpace) hostChat).close();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

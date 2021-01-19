@@ -59,8 +59,7 @@ public class ClientLogic implements Runnable{
             SpaceManager.addClientExitEvent(() -> {
                 try {
                     gameSpace.put(uname,"disconnect");
-                    ((RemoteSpace)gameSpace).close();
-                } catch (IOException | InterruptedException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 stopCom = true;
@@ -110,17 +109,6 @@ public class ClientLogic implements Runnable{
             huntingGrounds = SpaceManager.getHostSpace("huntingGrounds");
             field = SpaceManager.getHostSpace("field");
             constructionSite = SpaceManager.getHostSpace("constructionSite");
-            SpaceManager.addClientExitEvent(() -> {
-                try {
-                    ((RemoteSpace)forest).close();
-                    ((RemoteSpace)mine).close();
-                    ((RemoteSpace)huntingGrounds).close();
-                    ((RemoteSpace)field).close();
-                    ((RemoteSpace)constructionSite).close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
         } catch (IOException e) {
             e.printStackTrace();
         }

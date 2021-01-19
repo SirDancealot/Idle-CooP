@@ -41,13 +41,6 @@ public class Chat implements Runnable {
 		try {
 			remoteChatSpace = SpaceManager.getHostSpace("chat");
 			remoteChatSpace.put("joined", PropManager.getProperty("externalIP"), username);
-			SpaceManager.addClientExitEvent(() -> {
-				try {
-					((RemoteSpace)remoteChatSpace).close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}

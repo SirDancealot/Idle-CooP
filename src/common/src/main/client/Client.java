@@ -36,8 +36,7 @@ public class Client implements Runnable {
         SpaceManager.addClientExitEvent(() -> {
             try {
                 lobby.put("exitReq", PropManager.getProperty("externalIP"), PropManager.getProperty("localPort"), username);
-                ((RemoteSpace)lobby).close();
-            } catch (InterruptedException | IOException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         });
