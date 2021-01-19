@@ -102,6 +102,7 @@ public class HostLogic implements Runnable{
                         writeToUser(uname, "jobReq");
                         //get job
                         data = gameSpace.get(new ActualField(uname), new ActualField("job"), new FormalField(String.class));
+                        stopWork(uname);
                         switch (data[2].toString()){
                             case "Woodcutting":
                                 forest.put(uname);
@@ -125,11 +126,7 @@ public class HostLogic implements Runnable{
                     	jobs.add("save:" + uname);
                         unameToSpace.remove(finalUname);
                     case "stop":
-                        forest.getp(new ActualField(uname));
-                        mine.getp(new ActualField(uname));
-                        huntingGrounds.getp(new ActualField(uname));
-                        field.getp(new ActualField(uname));
-                        constructionSite.getp(new ActualField(uname));
+                    	stopWork(uname);
                         break;
                 }
             } catch (Exception e) {
@@ -142,6 +139,19 @@ public class HostLogic implements Runnable{
                 ((RemoteSpace)value).close();
             } catch (IOException ignore) { }
         });
+    }
+
+    private void stopWork(String player) {
+        try {
+            forest.getp(new ActualField(player));
+            mine.getp(new ActualField(player));
+            huntingGrounds.getp(new ActualField(player));
+            field.getp(new ActualField(player));
+            constructionSite.getp(new ActualField(player));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private PlayerState loadPlayer (String username) {

@@ -58,7 +58,7 @@ public class GameCalculations {
             tick();
 
             if (updateGUI)
-                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(getWoodDmgP(),getStoneDmgP(),getAnimalDmgP(),getWheatDmgP(),getHouseDmg(),true));
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(gameState.getWoodDmgP(), gameState.getStoneDmgP(),gameState.getAnimalDmgP(),gameState.getWheatDmgP(),gameState.getHouseDmg(),true));
 
             dt -= 1.0;
             String debug = PropManager.getProperty("debug");
@@ -84,33 +84,21 @@ public class GameCalculations {
         }
     };
 
-    //Wood stats
-    private final int woodHP = 30;
-    private int woodDmg = 0;
-    //Stone stats
-    private final int stoneHP = 50;
-    private int stoneDmg = 0;
-    //Animal stats
-    private final int animalHP = 600;
-    private int animalDmg = 0;
-    //Field stats
-    private final int wheatHP = 6000;
-    private int wheatDmg = 0;
-    //Construction site
-    private final int houseHP = 30;
-    private int houseDmg = 0;
-
     private void tick(){
-
         //Forest
+        int woodDmg = gameState.getWoodDmg();
+        int woodHP = GameState.woodHP;
         woodDmg += workingOn(GameCalculations.JOBS.WOODCUTTING);
         if(woodDmg >= woodHP){
             gameState.addWood(extraLoot(GameCalculations.JOBS.WOODCUTTING));
             addExp(GameCalculations.JOBS.WOODCUTTING);
             woodDmg %= woodHP;
         }
+        gameState.setWoodDmg(woodDmg);
 
         //Mine
+	    int stoneDmg = gameState.getStoneDmg();
+	    int stoneHP = GameState.stoneHP;
         for (int i = 1; i <= workingOn(GameCalculations.JOBS.MINING); i++){
             stoneDmg += i;
         }
@@ -119,8 +107,11 @@ public class GameCalculations {
             addExp(GameCalculations.JOBS.MINING);
             stoneDmg %= stoneHP;
         }
+        gameState.setStoneDmg(stoneDmg);
 
         //Hunting Grounds
+        int animalDmg = gameState.getAnimalDmg();
+        int animalHP = GameState.animalHP;
         int huntersWorking = workingOn(GameCalculations.JOBS.HUNTING);
         if(huntersWorking >= 2){
             animalDmg += huntersWorking;
@@ -130,8 +121,11 @@ public class GameCalculations {
             addExp(GameCalculations.JOBS.HUNTING);
             animalDmg %= animalHP;
         }
+        gameState.setAnimalDmg(animalDmg);
 
         //Fields
+        int wheatDmg = gameState.getWheatDmg();
+        int wheatHP = GameState.wheatHP;
         int farmersWorking = workingOn(GameCalculations.JOBS.FARMING);
         wheatDmg += farmersWorking;
 
@@ -140,8 +134,11 @@ public class GameCalculations {
             addExp(GameCalculations.JOBS.FARMING);
             wheatDmg %= wheatHP;
         }
+        gameState.setWheatDmg(wheatDmg);
 
         //Construction Site
+        int houseDmg = gameState.getHouseDmg();
+        int houseHP = GameState.houseHP;
         houseDmg += workingOn(GameCalculations.JOBS.CONSTRUCTION);
         if(houseDmg >= houseHP){
             if(gameState.getWood() > 0 && gameState.getStone() > 0 && (gameState.getMeat() > 0 || gameState.getWheat() > 0)){
@@ -154,9 +151,10 @@ public class GameCalculations {
                     gameState.addMeat(-1);
 
                 addExp(GameCalculations.JOBS.CONSTRUCTION);
-                animalDmg %= animalHP;
+                houseDmg %= houseHP;
             }
         }
+        gameState.setHouseDmg(houseDmg);
     }
 
     private int workingOn(JOBS job){
@@ -235,21 +233,5 @@ public class GameCalculations {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    public int getWoodDmgP(){
-        return (int)((double)woodDmg*100/woodHP);
-    }
-    public int getStoneDmgP(){
-        return (int)((double)stoneDmg*100/stoneHP);
-    }
-    public int getAnimalDmgP(){
-        return (int)((double)animalDmg*100/animalHP);
-    }
-    public int getWheatDmgP(){
-        return (int)((double)wheatDmg*100/wheatHP);
-    }
-    public int getHouseDmg(){
-        return (int)((double)houseDmg*100/houseHP);
     }
 }
