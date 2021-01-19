@@ -42,6 +42,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     private JLabel totalmeat;
     private JLabel totalwheat;
     private JLabel totalhouses;
+    private JLabel CurrentLvl;
 
     private PlayerState player;
     private Space hostChat, GUIjob;
@@ -71,7 +72,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
             switch (task){
                 case "setHP":
                     pBar = progressBar2;
-                case"setLvl":
+                case"setXP":
                     switch (list1.getSelectedValue().toString()) {
                         case "Woodcutting":
                             pBar.setValue(wood);
@@ -97,8 +98,12 @@ public class GameGUI extends JFrame implements ListSelectionListener {
                     totalwheat.setText("Wheat: " + wheat);
                     totalhouses.setText("Houses: " + house);
                     break;
-                default:
-                    System.out.println("something went wrong");
+                case "setLvl":
+                    CurrentLvl.setText("Current level: " + wood);
+                    CurrentLvl.setText("Current level: " + stone);
+                    CurrentLvl.setText("Current level: " + animal);
+                    CurrentLvl.setText("Current level: " + wheat);
+                    CurrentLvl.setText("Current level: " + house);
                     break;
             }
         }

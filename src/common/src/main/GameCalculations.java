@@ -74,20 +74,26 @@ public class GameCalculations {
                         ps.getHuntingProgress(),
                         ps.getFarmingProgress(),
                         ps.getConstructionProgress(),
-                        "setLvl"
+                        "setXP"
                 ));
 
-                if (updateGuiRequired) {
-                    SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
-                            gameState.getWood(),
-                            gameState.getStone(),
-                            gameState.getMeat(),
-                            gameState.getWheat(),
-                            gameState.getHouses(),
-                            "setRes"
-                    ));
-                }
-                updateGuiRequired = false;
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                        gameState.getWood(),
+                        gameState.getStone(),
+                        gameState.getMeat(),
+                        gameState.getWheat(),
+                        gameState.getHouses(),
+                        "setRes"
+                ));
+
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                        ps.getWoodcuttingLevel(),
+                        ps.getMiningLevel(),
+                        ps.getHunntingLevel(),
+                        ps.getFarmingLevel(),
+                        ps.getConstructionLevel(),
+                        "setLvl"
+                ));
             }
             long tickEnd = System.nanoTime();
             dt -= 1.0;
