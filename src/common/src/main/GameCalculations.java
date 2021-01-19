@@ -160,14 +160,18 @@ public class GameCalculations {
     private void tick(){
         try {
             workers = new List[]{
-                    forest.queryAll(new FormalField(String.class)),
+            		forest.queryAll(new FormalField(String.class)),
                     mine.queryAll(new FormalField(String.class)),
                     huntingGrounds.queryAll(new FormalField(String.class)),
                     field.queryAll(new FormalField(String.class)),
-                    constructionSite.queryAll(new FormalField(String.class)),
+                    constructionSite.queryAll(new FormalField(String.class))
             };
+            for (int i = 0; i < 5; i++) {
+                if (workers[i] == null)
+                    workers[i] = new ArrayList<>();
+            }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+        	workers = new List[]{new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()};
         }
         //Forest
         int woodDmg = gameState.getWoodDmg();
@@ -248,13 +252,8 @@ public class GameCalculations {
     }
 
     private int workingOn(JOBS job){
-        try {
-            List<Object[]> workerList = workers[job.toInt()];
-            return workerList.size();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
+        List<Object[]> workerList = workers[job.toInt()];
+        return workerList.size();
     }
 
     private int extraLoot(JOBS job) {
