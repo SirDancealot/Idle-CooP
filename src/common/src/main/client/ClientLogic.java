@@ -1,5 +1,6 @@
 package common.src.main.client;
 
+import common.src.UI.GameGUI;
 import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
 import common.src.main.GameCalculations;
@@ -9,6 +10,9 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClientLogic implements Runnable{
@@ -74,18 +78,16 @@ public class ClientLogic implements Runnable{
             e.printStackTrace();
         }
 
-        //new Thread(new ClientLogic(uname,false, gameState, playerState)).start();
+        new Thread(new ClientLogic(uname,false, gameState, playerState)).start();
     }
     boolean stopCom = false;
     private void loopCom(){
 
         Object[] data;
         String uname;
-
-
         SpaceManager.addClientExitEvent(()-> stopCom = true);
 
-        while(!stopWork){
+        while(!stopCom){
 
 
         }
@@ -102,7 +104,7 @@ public class ClientLogic implements Runnable{
     }
 
     private void initWork(){
-
+        unameToPlayerState = new HashMap<>();
         unameToPlayerState.put(uname,playerState);
     }
 

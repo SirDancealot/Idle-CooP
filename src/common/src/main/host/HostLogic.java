@@ -211,7 +211,7 @@ public class HostLogic implements Runnable{
         } else if (job.startsWith("gameState")) {
             try {
             	Object[] data = clients.queryp(new FormalField(String.class), new FormalField(String.class), new ActualField(job.split(":")[1]));
-            	Space space = SpaceManager.getRemoteSpace(data[0].toString(), data[1].toString(), data[2].toString());
+            	Space space = SpaceManager.getRemoteSpace(data[0].toString(), data[1].toString(), "localGame");
                 space.put("gameState", gameState);
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();

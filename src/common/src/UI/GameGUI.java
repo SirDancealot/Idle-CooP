@@ -77,17 +77,6 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         }
     }
 
-    public class addListener implements Runnable {
-        private final ActionListener a;
-        public addListener(ActionListener a) {
-            this.a = a;
-        }
-        @Override
-        public void run() {
-            startWorkButton.addActionListener(a);
-        }
-    }
-
     GameGUI(){
         GameGUI._INSTANCE = this;
         this.setContentPane(gamePanel);
