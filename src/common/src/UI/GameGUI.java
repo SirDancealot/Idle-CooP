@@ -213,8 +213,6 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         totalhouses.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
         chatArea.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
 
-
-
         sendMsg.addActionListener((ActionEvent e) -> {
         	if (hostChat == null) {
                 try {
@@ -287,5 +285,24 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         public void run() {
             chatArea.append(msg + "\n");
         }
+    }
+
+    /*This solution below for disabling a Jlist is not made by us but, but was taken from stackoverflow:
+    https://stackoverflow.com/questions/31669350/disable-jlist-cell-selection-property (07-28-2015)
+    This solution was created by user morpheus05 (07-28-2015)
+     */
+    private static class NoSelectionModel extends DefaultListSelectionModel {
+
+        @Override
+        public void setAnchorSelectionIndex(final int anchorIndex) {}
+
+        @Override
+        public void setLeadAnchorNotificationEnabled(final boolean flag) {}
+
+        @Override
+        public void setLeadSelectionIndex(final int leadIndex) {}
+
+        @Override
+        public void setSelectionInterval(final int index0, final int index1) {}
     }
 }
