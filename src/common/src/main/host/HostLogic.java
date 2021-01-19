@@ -4,6 +4,7 @@ import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
 import common.src.main.GameCalculations;
 import common.src.util.FileManager;
+import common.src.util.PropManager;
 import common.src.util.SpaceManager;
 import org.jspace.*;
 
@@ -77,7 +78,10 @@ public class HostLogic implements Runnable{
         Object[] data;
         String uname, action;
 
-        SpaceManager.addHostExitEvent(() -> stopCom.set(true));
+        SpaceManager.addHostExitEvent(() -> {
+            jobs.add("save:" + PropManager.getProperty("username"));
+            stopCom.set(true);
+        });
 
         while(!stopCom.get()){
             try {
@@ -160,7 +164,7 @@ public class HostLogic implements Runnable{
     }
 
     private void savePlayer(String username) {
-        FileManager.saveObject("./data/player" + username + ".ser", unameToPlayerState.get(username));
+        FileManager.saveObject("./data/players/" + username + ".ser", unameToPlayerState.get(username));
     }
 
     private void saveAll(){

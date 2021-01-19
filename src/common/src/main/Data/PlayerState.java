@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class PlayerState implements Serializable {
 
+    private static final long serialVersionUID = 70L;
+
     private int woodcuttingExp = 0;
     private int miningExp = 0;
     private int huntingExp = 0;
@@ -96,5 +98,30 @@ public class PlayerState implements Serializable {
 
     private static int xpToLevel(int xp){
         return Math.min((int) Math.floor(Math.sqrt(xp)), 100);
+    }
+
+    private static int progressToNextLevel(int xp) {
+        int level = xpToLevel(xp);
+        return (int)((xp - Math.pow(level, 2.0))/(Math.pow(level + 1, 2.0) - Math.pow(level, 2.0)) * 100);
+    }
+
+    public int getWoodcuttingProgress() {
+        return progressToNextLevel(woodcuttingExp);
+    }
+
+    public int getMiningProgress() {
+        return progressToNextLevel(miningExp);
+    }
+
+    public int getHuntingProgress() {
+        return progressToNextLevel(huntingExp);
+    }
+
+    public int getFarmingProgress() {
+        return progressToNextLevel(farmingExp);
+    }
+
+    public int getConstructionProgress() {
+        return progressToNextLevel(constructionExp);
     }
 }

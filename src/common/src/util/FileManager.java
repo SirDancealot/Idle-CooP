@@ -23,6 +23,7 @@ public class FileManager {
 
 	public static <E> void saveObject(String path, E obj) {
 		try {
+			File f = new File(path);
 			FileOutputStream fos = new FileOutputStream(path);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(obj);

@@ -57,8 +57,18 @@ public class GameCalculations {
             ticks++;
             tick();
 
-            if (updateGUI)
+            if (updateGUI) {
                 SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(gameState.getWoodDmgP(), gameState.getStoneDmgP(),gameState.getAnimalDmgP(),gameState.getWheatDmgP(),gameState.getHouseDmg(),true));
+                PlayerState ps = unameToPlayerState.get(PropManager.getProperty("username"));
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                        ps.getWoodcuttingProgress(),
+                        ps.getMiningProgress(),
+                        ps.getHuntingProgress(),
+                        ps.getFarmingProgress(),
+                        ps.getConstructionProgress(),
+                        false
+                ));
+            }
 
             dt -= 1.0;
             String debug = PropManager.getProperty("debug");
