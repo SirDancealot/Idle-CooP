@@ -7,8 +7,12 @@ import common.src.main.Data.PlayerState;
 import org.jspace.Space;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 
@@ -33,6 +37,11 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     private JTextField chatMsg;
     private JButton sendMsg;
     private JTextArea chatArea;
+    private JLabel totalwood;
+    private JLabel totalstone;
+    private JLabel totalmeat;
+    private JLabel totalwheat;
+    private JLabel totalhouses;
 
     private PlayerState player;
     private Space hostChat, GUIjob;
@@ -105,7 +114,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         addWindowListener(exitListen);
 
         setTitle("Idle game");
-        setBounds(0, 0  , 800, 800);
+        setBounds(0, 0  , 1000, 800);
         setResizable(false);
 
         DefaultListModel<String> skillList = new DefaultListModel<>();
@@ -116,12 +125,18 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         skillList.addElement("Construction");
 
         list1.setModel(skillList);
-
         list1.setLayoutOrientation(JList.VERTICAL);
         list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list1.setSelectedIndex(0);
         CurrentSkill.setText(CurrentSkill.getText()+ " " + list1.getSelectedValue().toString());
         list1.addListSelectionListener(this);
+        Border margin = new EmptyBorder(10,10,10,10);
+        totalwood.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        totalstone.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        totalmeat.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        totalwheat.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        totalhouses.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
+        chatArea.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
 
         sendMsg.addActionListener((ActionEvent e) -> {
         	if (hostChat == null) {
