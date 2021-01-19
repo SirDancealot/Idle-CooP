@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HostLogic implements Runnable{
 
-    private static Vector<Runnable> jobs = new Vector<>();
+    private static Vector<String> jobs = new Vector<>();
     private Map <String,Space> unameToSpace = new HashMap<>();
     private Map <String, PlayerState> unameToPlayerState = new HashMap<>();
     private Space clients;
@@ -92,14 +92,7 @@ public class HostLogic implements Runnable{
                         unameToPlayerState.put(uname, loadPlayer(uname));
                         unameToSpace.get(uname).put("playerState",unameToPlayerState.get(uname));
 
-                        jobs.add(() -> {
-                            unameToPlayerState.put(finalUname, loadPlayer(finalUname));
-                            try {
-                                unameToSpace.get(finalUname).put("gameState",gameState);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                        jobs.add("gameState:" + uname);
                         break;
 
                         //TODO update working thread with new player
@@ -130,9 +123,7 @@ public class HostLogic implements Runnable{
 
                         break;
                     case "disconnect":
-                        jobs.add(() -> {
-                            savePlayer(finalUname);
-                        });
+                    	jobs.add("save:" + uname);
                         unameToSpace.remove(finalUname);
                     case "stop":
                         forest.getp(new ActualField(uname));
@@ -179,30 +170,15 @@ public class HostLogic implements Runnable{
     }
 
     private void initWork() {
-        System.out.println("init work");
-
         try {
             clients = SpaceManager.getLocalSpace("clients");
         } catch (IOException e) {
             System.out.println("Client space could not be found.");
             e.printStackTrace();
         }
-
-        try {
-            File gameStateFile = new File("./data/GameState.ser");
-            if (gameStateFile.exists()) {
-                FileInputStream fis = new FileInputStream("./data/GameState.ser");
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                gameState = (GameState) ois.readObject();
-                ois.close();
-                fis.close();
-            } else
-                gameState = new GameState();
-        } catch (IOException e) {
+        gameState = FileManager.loadObject("./data/GameState.ser");
+        if (gameState == null)
             gameState = new GameState();
-        } catch (ClassNotFoundException c) {
-            c.printStackTrace();
-        }
 
         try {
             forest = SpaceManager.getLocalSpace("forest");
@@ -223,9 +199,23 @@ public class HostLogic implements Runnable{
 
         while (!stopWork.get()) {
             if (jobs.size() > 0) {
-                jobs.remove(jobs.size() - 1).run();
+                doJob(jobs.remove(jobs.size() - 1));
             }
             gameCalculations.update();
+        }
+    }
+
+    private void doJob(String job) {
+        if (job.startsWith("save")) {
+            savePlayer(job.split(":")[1]);
+        } else if (job.startsWith("gameState")) {
+            try {
+            	Object[] data = clients.queryp(new FormalField(String.class), new FormalField(String.class), new ActualField(job.split(":")[1]));
+            	Space space = SpaceManager.getRemoteSpace(data[0].toString(), data[1].toString(), data[2].toString());
+                space.put("gameState", gameState);
+            } catch (InterruptedException | IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

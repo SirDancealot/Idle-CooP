@@ -37,13 +37,12 @@ public class ClientLogic implements Runnable{
 
     @Override
     public void run() {
-
         if(state){
             initCom();
             loopCom();
         } else{
             initWork();
-            initWork();
+            loopWork();
         }
     }
 
@@ -71,7 +70,7 @@ public class ClientLogic implements Runnable{
             e.printStackTrace();
         }
 
-        new Thread(new ClientLogic(uname,false, gameState, playerState)).start();
+        //new Thread(new ClientLogic(uname,false, gameState, playerState)).start();
     }
 
     private void loopCom(){
