@@ -72,7 +72,7 @@ public class GameCalculations {
                         ps.getHuntingProgress(),
                         ps.getFarmingProgress(),
                         ps.getConstructionProgress(),
-                        "setLvl"
+                        "setXP"
                 ));
 
                 SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
@@ -82,6 +82,15 @@ public class GameCalculations {
                         gameState.getWheat(),
                         gameState.getHouses(),
                         "setRes"
+                ));
+
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                        ps.getWoodcuttingLevel(),
+                        ps.getMiningLevel(),
+                        ps.getHunntingLevel(),
+                        ps.getFarmingLevel(),
+                        ps.getConstructionLevel(),
+                        "setLvl"
                 ));
             }
 
