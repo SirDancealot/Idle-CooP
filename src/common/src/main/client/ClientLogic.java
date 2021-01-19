@@ -15,12 +15,14 @@ public class ClientLogic implements Runnable{
 
     private Space gameSpace;
     private Space userSpace;
+    private Space GUIjob;
     private GameState gameState;
     private PlayerState playerState;
     private String uname;
     private boolean state;
     private String currentWork;
     private Map<String, PlayerState> unameToPlayerState;
+
 
     private Space forest;
     private Space mine;
@@ -50,6 +52,8 @@ public class ClientLogic implements Runnable{
         try {
             userSpace = new SequentialSpace();
             SpaceManager.exposePublicSpace(userSpace,"localGame");
+            GUIjob = new SequentialSpace();
+            SpaceManager.addLocalSpace(GUIjob,"GUIjob");
 
             gameSpace = SpaceManager.getHostSpace("game");
             gameSpace.put(uname,"joined");
@@ -106,11 +110,11 @@ public class ClientLogic implements Runnable{
         unameToPlayerState.put(uname,playerState);
     }
 
-    boolean stop = false;
+    private boolean stop = false;
     private void loopWork(){
 
         GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState,true);
-        SpaceManager.addClientExitEvent(() -> { stop = true; });
+        SpaceManager.addClientExitEvent(() -> stop = true);
         while (!stop){
 
             gameCalculations.update();

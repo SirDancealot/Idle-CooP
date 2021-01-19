@@ -35,7 +35,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     private JTextArea chatArea;
 
     private PlayerState player;
-    private Space hostChat;
+    private Space hostChat, GUIjob;
 
     public class setProgress implements Runnable {
         private final int wood;
@@ -90,8 +90,6 @@ public class GameGUI extends JFrame implements ListSelectionListener {
 
     GameGUI(){
         GameGUI._INSTANCE = this;
-
-
         this.setContentPane(gamePanel);
         this.pack();
 
