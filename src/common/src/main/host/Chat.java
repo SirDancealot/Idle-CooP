@@ -93,10 +93,6 @@ public class Chat implements Runnable {
 	}
 
 	private void removeClient(String clientIp) {
-		try {
-			clientSpaces.remove(clientIp).put("disconnected", true);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		clientSpaces.remove(clientIp);
 	}
 }

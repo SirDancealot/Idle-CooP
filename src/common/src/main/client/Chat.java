@@ -5,6 +5,7 @@ import common.src.main.Data.PlayerState;
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
 import org.jspace.FormalField;
+import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
@@ -109,7 +110,9 @@ public class Chat implements Runnable {
 					switch (msg) {
 						case "stop":
 							try {
-								SpaceManager.getHostSpace("chat").put("disconnect", "", username);
+								RemoteSpace space = (RemoteSpace) SpaceManager.getHostSpace("chat");
+								space.put("disconnect", "", username);
+								space.close();
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
