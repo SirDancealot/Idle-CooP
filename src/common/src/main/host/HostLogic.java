@@ -51,6 +51,11 @@ public class HostLogic implements Runnable{
     private void initCom() {
         new Thread(new HostLogic(false)).start();
 
+        try {
+            clients = SpaceManager.getLocalSpace("clients");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         gameSpace = new SequentialSpace();
         SpaceManager.exposeHostSpace(gameSpace, "game");
 
@@ -87,8 +92,14 @@ public class HostLogic implements Runnable{
                         unameToSpace.put(uname,SpaceManager.getRemoteSpace(data[0].toString(),data[1].toString(),"localGame"));
                         unameToPlayerState.put(uname, loadPlayer(uname));
                         unameToSpace.get(uname).put("playerState",unameToPlayerState.get(uname));
+
                         jobs.add(() -> {
                             unameToPlayerState.put(finalUname, loadPlayer(finalUname));
+                            try {
+                                unameToSpace.get(finalUname).put("gameState",gameState);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         });
                         break;
 
