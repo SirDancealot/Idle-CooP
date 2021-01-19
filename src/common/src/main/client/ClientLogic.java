@@ -110,12 +110,11 @@ public class ClientLogic implements Runnable{
     private void loopWork(){
 
         boolean stop = false;
-        GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState);
+        GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState,true);
 
-        while(!stop){
+        while (!stop){
 
             gameCalculations.update();
         }
-
     }
 }

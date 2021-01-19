@@ -1,6 +1,5 @@
 package common.src.main.host;
 
-
 import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
 import common.src.main.GameCalculations;
@@ -220,7 +219,7 @@ public class HostLogic implements Runnable{
     private void loopWork(){
         SpaceManager.addHostExitEvent(() -> stopWork.set(true));
 
-        GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState);
+        GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState,false);
 
         while (!stopWork.get()) {
             if (jobs.size() > 0) {

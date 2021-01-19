@@ -1,11 +1,13 @@
 package common.src.main;
 
+import common.src.UI.GameGUI;
 import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
 import common.src.util.PropManager;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +20,7 @@ public class GameCalculations {
     private final Space constructionSite;
     private final GameState gameState;
     private final Map<String, PlayerState> unameToPlayerState;
+    private boolean updateGUI;
     Space[] workspaces;
 
     long ticks = 0;
@@ -29,7 +32,7 @@ public class GameCalculations {
     int missingTicks;
     double nsPerTick = nsPerSec/TPS;
 
-    public GameCalculations(Space forest, Space mine, Space huntingGrounds, Space field, Space constructionSite, GameState gameState, Map <String, PlayerState> unameToPlayerState){
+    public GameCalculations(Space forest, Space mine, Space huntingGrounds, Space field, Space constructionSite, GameState gameState, Map <String, PlayerState> unameToPlayerState, boolean updateGUI){
         this.forest = forest;
         this.mine = mine;
         this.huntingGrounds = huntingGrounds;
@@ -37,9 +40,8 @@ public class GameCalculations {
         this.constructionSite = constructionSite;
         this.gameState = gameState;
         this.unameToPlayerState = unameToPlayerState;
+        this.updateGUI = updateGUI;
         workspaces =  new Space[] {forest, mine, huntingGrounds, field, constructionSite};
-
-
     }
 
     public void update(){
@@ -54,6 +56,10 @@ public class GameCalculations {
         if (missingTicks > 0) {
             ticks++;
             tick();
+
+            if (updateGUI)
+                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(getWoodDmgP(),getStoneDmgP(),getAnimalDmgP(),getWheatDmgP(),getHouseDmg(),true));
+
             dt -= 1.0;
             String debug = PropManager.getProperty("debug");
             if (debug != null) {
@@ -227,5 +233,21 @@ public class GameCalculations {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getWoodDmgP(){
+        return (int)((double)woodDmg*100/woodHP);
+    }
+    public int getStoneDmgP(){
+        return (int)((double)stoneDmg*100/stoneHP);
+    }
+    public int getAnimalDmgP(){
+        return (int)((double)animalDmg*100/animalHP);
+    }
+    public int getWheatDmgP(){
+        return (int)((double)wheatDmg*100/wheatHP);
+    }
+    public int getHouseDmg(){
+        return (int)((double)houseDmg*100/houseHP);
     }
 }
