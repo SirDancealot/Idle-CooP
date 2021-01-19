@@ -69,7 +69,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         	JProgressBar pBar;
             pBar = progressBar1;
             switch (task){
-                case "setHp":
+                case "setHP":
                     pBar = progressBar2;
                 case"setLvl":
                     switch (list1.getSelectedValue().toString()) {
@@ -96,6 +96,9 @@ public class GameGUI extends JFrame implements ListSelectionListener {
                     totalmeat.setText("Meat: " + animal);
                     totalwheat.setText("Wheat: " + wheat);
                     totalhouses.setText("Houses: " + house);
+                    break;
+                default:
+                    System.out.println("something went wrong");
                     break;
             }
         }
