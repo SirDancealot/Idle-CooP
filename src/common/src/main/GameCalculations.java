@@ -45,6 +45,11 @@ public class GameCalculations {
     }
 
     boolean updateGuiRequired = true;
+    int lastWood = 0, nowWood = 0;
+    int lastStone = 0, nowStone = 0;
+    int lastAnimal = 0, nowAnimal = 0;
+    int lastWheat = 0, nowWheat = 0;
+    int lastHouse = 0, nowHouse = 0;
     public void update(){
 
         long nowNs = System.nanoTime();
@@ -58,8 +63,12 @@ public class GameCalculations {
             long tickStart = System.nanoTime();
             ticks++;
             tick();
-
             if (updateGUI) {
+                nowWood = workingOn(JOBS.WOODCUTTING);
+                nowStone = workingOn(JOBS.MINING);
+                nowAnimal = workingOn(JOBS.HUNTING);
+                nowWheat = workingOn(JOBS.FARMING);
+                nowHouse = workingOn(JOBS.CONSTRUCTION);
                 SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
                         gameState.getWoodDmgP(),
                         gameState.getStoneDmgP(),
@@ -94,6 +103,20 @@ public class GameCalculations {
                         ps.getConstructionLevel(),
                         "setLvl"
                 ));
+
+                if (lastWood != nowWood ||
+                    lastStone != nowStone ||
+                    lastAnimal != nowAnimal ||
+                    lastWheat != nowWheat ||
+                    lastHouse != nowHouse) {
+
+                }
+
+                lastWood = nowWood;
+                lastStone = nowStone;
+                lastAnimal = nowAnimal;
+                lastWheat = nowWheat;
+                lastHouse = nowHouse;
             }
             long tickEnd = System.nanoTime();
             dt -= 1.0;

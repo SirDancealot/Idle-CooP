@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.util.List;
 import java.awt.event.*;
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     }
 
     private JPanel gamePanel;
-    private JList list1;
+    private JList<String> list1;
     private JLabel CurrentSkill;
     private JProgressBar progressBar1;
     private JProgressBar progressBar2;
@@ -105,6 +106,56 @@ public class GameGUI extends JFrame implements ListSelectionListener {
                     CurrentLvl.setText("Current level: " + wheat);
                     CurrentLvl.setText("Current level: " + house);
                     break;
+            }
+        }
+    }
+
+    DefaultListModel<String> woodList = new DefaultListModel<>();
+    DefaultListModel<String> stoneList = new DefaultListModel<>();
+    DefaultListModel<String> animalList = new DefaultListModel<>();
+    DefaultListModel<String> wheatList = new DefaultListModel<>();
+    DefaultListModel<String> houseList = new DefaultListModel<>();
+    public class setWorkers implements Runnable {
+        private final List<Object[]> woodWorkers;
+        private final List<Object[]> stoneWorkers;
+        private final List<Object[]> animalWorkers;
+        private final List<Object[]> wheatWorkers;
+        private final List<Object[]> houseWorkers;
+
+        public setWorkers(List<Object[]> woodWorkers,
+                          List<Object[]> stoneWorkers,
+                          List<Object[]> animalWorkers,
+                          List<Object[]> wheatWorkers,
+                          List<Object[]> houseWorkers) {
+
+            this.woodWorkers = woodWorkers;
+            this.stoneWorkers = stoneWorkers;
+            this.animalWorkers = animalWorkers;
+            this.wheatWorkers = wheatWorkers;
+            this.houseWorkers = houseWorkers;
+        }
+
+        @Override
+        public void run() {
+            woodList.clear();
+            for (Object[] o : woodWorkers) {
+                woodList.addElement(o[0].toString());
+            }
+            stoneList.clear();
+            for (Object[] o : stoneWorkers) {
+                stoneList.addElement(o[0].toString());
+            }
+            animalList.clear();
+            for (Object[] o : animalWorkers) {
+                animalList.addElement(o[0].toString());
+            }
+            wheatList.clear();
+            for (Object[] o : woodWorkers) {
+                wheatList.addElement(o[0].toString());
+            }
+            houseList.clear();
+            for (Object[] o : houseWorkers) {
+                houseList.addElement(o[0].toString());
             }
         }
     }
