@@ -99,12 +99,24 @@ public class GameGUI extends JFrame implements ListSelectionListener {
                     totalhouses.setText("Houses: " + house);
                     break;
                 case "setLvl":
-                    CurrentLvl.setText("Current level: " + wood);
-                    CurrentLvl.setText("Current level: " + stone);
-                    CurrentLvl.setText("Current level: " + animal);
-                    CurrentLvl.setText("Current level: " + wheat);
-                    CurrentLvl.setText("Current level: " + house);
-                    break;
+                    switch (list1.getSelectedValue().toString()) {
+                        case "Woodcutting":
+                            CurrentLvl.setText("Current level: " + wood);
+                            break;
+                        case "Mining":
+                            CurrentLvl.setText("Current level: " + stone);
+                            break;
+                        case "Hunting":
+                            CurrentLvl.setText("Current level: " + animal);
+                            break;
+                        case "Farming":
+                            CurrentLvl.setText("Current level: " + wheat);
+                            break;
+                        case "Construction":
+                            CurrentLvl.setText("Current level: " + house);
+                            break;
+                    }
+                break;
             }
         }
     }
