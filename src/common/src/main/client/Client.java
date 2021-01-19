@@ -2,6 +2,7 @@ package common.src.main.client;
 
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
+import org.jspace.RemoteSpace;
 import org.jspace.Space;
 import java.io.IOException;
 
@@ -35,7 +36,8 @@ public class Client implements Runnable {
         SpaceManager.addClientExitEvent(() -> {
             try {
                 lobby.put("exitReq", PropManager.getProperty("externalIP"), PropManager.getProperty("localPort"), username);
-            } catch (InterruptedException e) {
+                ((RemoteSpace)lobby).close();
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
         });

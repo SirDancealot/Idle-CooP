@@ -4,6 +4,7 @@ import common.src.util.PropManager;
 import common.src.util.SpaceManager;
 
 import common.src.main.Data.PlayerState;
+import org.jspace.RemoteSpace;
 import org.jspace.Space;
 
 import javax.swing.*;
@@ -218,6 +219,13 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         	if (hostChat == null) {
                 try {
                     hostChat = SpaceManager.getHostSpace("chat");
+                    SpaceManager.addClientExitEvent(() -> {
+                        try {
+                            ((RemoteSpace) hostChat).close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

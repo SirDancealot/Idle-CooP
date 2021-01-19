@@ -206,6 +206,17 @@ public class HostLogic implements Runnable{
             huntingGrounds = SpaceManager.getHostSpace("huntingGrounds");
             field = SpaceManager.getHostSpace("field");
             constructionSite = SpaceManager.getHostSpace("constructionSite");
+            SpaceManager.addHostExitEvent(() -> {
+                try {
+                    ((RemoteSpace)forest).close();
+                    ((RemoteSpace)mine).close();
+                    ((RemoteSpace)huntingGrounds).close();
+                    ((RemoteSpace)field).close();
+                    ((RemoteSpace)constructionSite).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }

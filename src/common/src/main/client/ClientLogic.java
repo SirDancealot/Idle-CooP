@@ -4,10 +4,8 @@ import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
 import common.src.main.GameCalculations;
 import common.src.util.SpaceManager;
-import org.jspace.ActualField;
-import org.jspace.FormalField;
-import org.jspace.SequentialSpace;
-import org.jspace.Space;
+import org.jspace.*;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +56,13 @@ public class ClientLogic implements Runnable{
 
             gameSpace = SpaceManager.getHostSpace("game");
             gameSpace.put(uname,"joined");
+            SpaceManager.addClientExitEvent(() -> {
+                try {
+                    ((RemoteSpace)gameSpace).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
 
             Object[] data;
             data = userSpace.get(new ActualField("gameState"), new FormalField(GameState.class));
@@ -114,6 +119,17 @@ public class ClientLogic implements Runnable{
             huntingGrounds = SpaceManager.getHostSpace("huntingGrounds");
             field = SpaceManager.getHostSpace("field");
             constructionSite = SpaceManager.getHostSpace("constructionSite");
+            SpaceManager.addClientExitEvent(() -> {
+                try {
+                    ((RemoteSpace)forest).close();
+                    ((RemoteSpace)mine).close();
+                    ((RemoteSpace)huntingGrounds).close();
+                    ((RemoteSpace)field).close();
+                    ((RemoteSpace)constructionSite).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
