@@ -1,56 +1,121 @@
 package common.src.main.client;
 
-import common.src.UI.GameGUI;
 import common.src.main.Data.GameState;
 import common.src.main.Data.PlayerState;
+import common.src.main.GameCalculations;
 import common.src.util.SpaceManager;
+import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.util.Map;
 
 public class ClientLogic implements Runnable{
 
-    //TODO host local player
-
-    //TODO host local gamestate
-
     private Space gameSpace;
     private Space userSpace;
-    private GameState gs;
-    private PlayerState ps;
+    private GameState gameState;
+    private PlayerState playerState;
     private String uname;
+    private boolean state;
+    private String currentWork;
+    private Map<String, PlayerState> unameToPlayerState;
 
-    public ClientLogic(String uname){
+    private Space forest;
+    private Space mine;
+    private Space huntingGrounds;
+    private Space field;
+    private Space constructionSite;
+
+    public ClientLogic(String uname, boolean state, GameState gameState, PlayerState playerState){
         this.uname = uname;
+        this.state = state;
+        this.gameState = gameState;
+        this.playerState = playerState;
     }
 
     @Override
     public void run() {
-        init();
+
+        if(state){
+            initCom();
+            loopCom();
+        } else{
+            initWork();
+            initWork();
+        }
     }
 
-    private void init(){
+    private void initCom(){
         try {
             userSpace = new SequentialSpace();
             SpaceManager.exposePublicSpace(userSpace,"localGame");
 
             gameSpace = SpaceManager.getHostSpace("game");
             gameSpace.put(uname,"joined");
+
+            forest = SpaceManager.getHostSpace("forest");
+            mine = SpaceManager.getHostSpace("mine");
+            huntingGrounds = SpaceManager.getHostSpace("huntingGrounds");
+            field = SpaceManager.getHostSpace("field");
+            constructionSite = SpaceManager.getHostSpace("constructionSite");
+
+            Object[] data;
+            data = userSpace.get(new ActualField("gameState"), new FormalField(GameState.class));
+            gameState = (GameState) data[1];
+            data = userSpace.get(new ActualField("playerState"), new FormalField(PlayerState.class));
+            playerState = (PlayerState) data[1];
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        new Thread(new ClientLogic(uname,false, gameState, playerState)).start();
     }
 
-    private void loop(){
+    private void loopCom(){
 
+        Object[] data;
+        String uname;
         boolean stop = false;
 
         while(!stop){
 
+            // if player press start state
+            if(false){
+
+                String job;
+                //startWorkAtHost(job);
+
+            }
         }
+    }
+
+    private void startWorkAtHost(String job){
+        try {
+            gameSpace.put(uname,"state");
+            userSpace.get(new ActualField("jobReq"));
+            gameSpace.put(uname,"job",job);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initWork(){
+
+        unameToPlayerState.put(uname,playerState);
+    }
+
+    private void loopWork(){
+
+        boolean stop = false;
+        GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState);
+
+        while(!stop){
+
+            gameCalculations.update();
+        }
+
     }
 }

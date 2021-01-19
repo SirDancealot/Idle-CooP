@@ -2,11 +2,8 @@ package common.src.main.client;
 
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
-import org.jspace.RemoteSpace;
 import org.jspace.Space;
-
 import java.io.IOException;
-import java.util.Scanner;
 
 
 public class Client implements Runnable {
@@ -45,5 +42,7 @@ public class Client implements Runnable {
         Thread t = new Thread(new Chat(username, false));
         Chat.setWriter(t);
         t.start();
+
+        new Thread(new ClientLogic(username,true, null, null)).start();
     }
 }
