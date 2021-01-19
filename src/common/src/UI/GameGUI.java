@@ -4,11 +4,13 @@ import common.src.util.PropManager;
 import common.src.util.SpaceManager;
 
 import common.src.main.Data.PlayerState;
+import org.jspace.Space;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class GameGUI extends JFrame implements ListSelectionListener {
 
@@ -30,9 +32,10 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     private JScrollPane chat;
     private JTextField chatMsg;
     private JButton sendMsg;
-    private JLabel chatWindow;
+    private JTextArea chatArea;
 
     private PlayerState player;
+    private Space hostChat;
 
     public class setProgress implements Runnable {
         private final int wood;
@@ -75,26 +78,19 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     }
 
     public class addListener implements Runnable {
-
         private final ActionListener a;
-        private final boolean workButton;
-
-        public addListener(ActionListener a, boolean workButton) {
+        public addListener(ActionListener a) {
             this.a = a;
-            this.workButton = workButton;
         }
-
         @Override
         public void run() {
-            if (workButton)
-                startWorkButton.addActionListener(a);
-            else
-                sendMsg.addActionListener(a);
+            startWorkButton.addActionListener(a);
         }
     }
 
     GameGUI(){
         GameGUI._INSTANCE = this;
+
 
         this.setContentPane(gamePanel);
         this.pack();
@@ -139,6 +135,24 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list1.setSelectedIndex(0);
         list1.addListSelectionListener(this);
+
+        sendMsg.addActionListener((ActionEvent e) -> {
+        	if (hostChat == null) {
+                try {
+                    hostChat = SpaceManager.getHostSpace("chat");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            try {
+                if (!chatMsg.getText().isBlank()) {
+                    hostChat.put("msg", chatMsg.getText(), PropManager.getProperty("username"));
+                    chatMsg.setText("");
+                }
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -159,6 +173,18 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         }else if (list1.getSelectedValue() == "Construction"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
 
+        }
+    }
+
+    public class addChatMessage implements Runnable {
+        String msg;
+        public addChatMessage(String msg) {
+            this.msg = msg;
+        }
+
+        @Override
+        public void run() {
+            chatArea.append(msg + "\n");
         }
     }
 }

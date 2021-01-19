@@ -1,5 +1,6 @@
 package common.src.main.client;
 
+import common.src.UI.GameGUI;
 import common.src.main.Data.PlayerState;
 import common.src.util.PropManager;
 import common.src.util.SpaceManager;
@@ -7,6 +8,7 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -119,11 +121,11 @@ public class Chat implements Runnable {
 					}
 				} else {
 					System.out.println(user + ": " + msg);
+					SwingUtilities.invokeLater(GameGUI.getInstance().new addChatMessage(user + ": " + msg));
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
 		}
 	}
 
