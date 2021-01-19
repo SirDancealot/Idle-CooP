@@ -174,9 +174,7 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         totalwheat.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
         totalhouses.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
         chatArea.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
-
-
-
+        
         sendMsg.addActionListener((ActionEvent e) -> {
         	if (hostChat == null) {
                 try {
