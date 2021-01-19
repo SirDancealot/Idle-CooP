@@ -86,14 +86,16 @@ public class GameCalculations {
                         "setXP"
                 ));
 
-                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
-                        gameState.getWood(),
-                        gameState.getStone(),
-                        gameState.getMeat(),
-                        gameState.getWheat(),
-                        gameState.getHouses(),
-                        "setRes"
-                ));
+                if (updateGuiRequired) {
+                    SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                            gameState.getWood(),
+                            gameState.getStone(),
+                            gameState.getMeat(),
+                            gameState.getWheat(),
+                            gameState.getHouses(),
+                            "setRes"
+                    ));
+                }
 
                 SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
                         ps.getWoodcuttingLevel(),
