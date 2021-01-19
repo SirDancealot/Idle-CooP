@@ -27,7 +27,7 @@ public class App implements Runnable {
 	@Override
 	public void run() {
 		try {
-			PropManager.initData(host, hostIP, hostPort, localPort);
+			PropManager.initData(host, hostIP, hostPort, localPort, username);
 			SpaceManager.init();
 		} catch (IOException e) {
 			e.printStackTrace();

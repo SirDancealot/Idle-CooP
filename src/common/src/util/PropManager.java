@@ -53,13 +53,14 @@ public class PropManager {
 		PropManager.setProperty("externalIP", br.readLine());
 	}
 
-	public static void initData(boolean host, String hostIP, String hostPort, String localPort) throws IOException {
+	public static void initData(boolean host, String hostIP, String hostPort, String localPort, String username) throws IOException {
 		init();
 		if (host)
 			PropManager.setProperty("host", "true");
 		PropManager.setProperty("hostIP", hostIP);
 		PropManager.setProperty("hostPort", hostPort);
 		PropManager.setProperty("localPort", localPort);
+		PropManager.setProperty("username", username);
 
 
 	}
