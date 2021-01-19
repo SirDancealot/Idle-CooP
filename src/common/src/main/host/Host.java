@@ -45,6 +45,7 @@ public class Host implements Runnable {
 						clients.getp(new ActualField(ip), new ActualField(port), new ActualField(user));
 						System.out.println("--- Goodbye ---");
 						System.out.println(ip + ":" + port);
+						System.out.println("Goodbye: " + user);
 						break;
 				}
 			} catch (Exception e) {

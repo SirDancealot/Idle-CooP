@@ -12,10 +12,6 @@ public class PlayerState implements Serializable {
     private int farmingExp = 0;
     private int constructionExp = 0;
 
-    public PlayerState() {
-
-    }
-
     public int getWoodcuttingExp() {
         return woodcuttingExp;
     }

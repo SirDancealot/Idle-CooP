@@ -93,10 +93,12 @@ public class HostLogic implements Runnable{
                     case "joined":
                         data = clients.query(new FormalField(String.class), new FormalField(String.class), new ActualField(uname));
                         unameToSpace.put(uname,SpaceManager.getRemoteSpace(data[0].toString(),data[1].toString(),"localGame"));
-                        unameToPlayerState.put(uname, loadPlayer(uname));
+                        PlayerState ps = loadPlayer(uname);
+                        unameToPlayerState.put(uname, ps);
                         unameToSpace.get(uname).put("playerState",unameToPlayerState.get(uname));
 
                         jobs.add("gameState:" + uname);
+                        jobs.add("playerState:" + uname);
                         break;
 
                         //TODO update working thread with new player
@@ -155,7 +157,6 @@ public class HostLogic implements Runnable{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
     private PlayerState loadPlayer (String username) {
@@ -169,7 +170,7 @@ public class HostLogic implements Runnable{
 
     private void saveAll(){
         unameToPlayerState.forEach((String key, PlayerState value) -> {
-            FileManager.saveObject("./data/player/" + key + ".ser", value);
+            FileManager.saveObject("./data/players/" + key + ".ser", value);
         });
         FileManager.saveObject("./data/GameState.ser", gameState);
     }
@@ -219,16 +220,19 @@ public class HostLogic implements Runnable{
     }
 
     private void doJob(String job) {
+        String username = job.split(":")[1];
         if (job.startsWith("save")) {
             savePlayer(job.split(":")[1]);
         } else if (job.startsWith("gameState")) {
             try {
-            	Object[] data = clients.queryp(new FormalField(String.class), new FormalField(String.class), new ActualField(job.split(":")[1]));
+            	Object[] data = clients.queryp(new FormalField(String.class), new FormalField(String.class), new ActualField(username));
             	Space space = SpaceManager.getRemoteSpace(data[0].toString(), data[1].toString(), "localGame");
                 space.put("gameState", gameState);
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
+        } else if (job.startsWith("playerState")) {
+            unameToPlayerState.put(username, loadPlayer(username));
         }
     }
 }
