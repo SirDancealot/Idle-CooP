@@ -28,7 +28,7 @@ public class GameCalculations {
     final double nsPerSec = 1000000000;
     final double TPS = 10;
     long lastNs = System.nanoTime();
-    double dt = 1.0;
+    double dt = 0.0;
     int missingTicks;
     double nsPerTick = nsPerSec/TPS;
 
@@ -44,6 +44,7 @@ public class GameCalculations {
         workspaces =  new Space[] {forest, mine, huntingGrounds, field, constructionSite};
     }
 
+    boolean updateGuiRequired = true;
     public void update(){
 
         long nowNs = System.nanoTime();
@@ -63,26 +64,29 @@ public class GameCalculations {
                         gameState.getStoneDmgP(),
                         gameState.getAnimalDmgP(),
                         gameState.getWheatDmgP(),
-                        gameState.getHouseDmg(),
+                        gameState.getHouseDmgP(),
                         "setHP"));
-                PlayerState ps = unameToPlayerState.get(PropManager.getProperty("username"));
-                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
-                        ps.getWoodcuttingProgress(),
-                        ps.getMiningProgress(),
-                        ps.getHuntingProgress(),
-                        ps.getFarmingProgress(),
-                        ps.getConstructionProgress(),
-                        "setLvl"
-                ));
+                    PlayerState ps = unameToPlayerState.get(PropManager.getProperty("username"));
+                    SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                            ps.getWoodcuttingProgress(),
+                            ps.getMiningProgress(),
+                            ps.getHuntingProgress(),
+                            ps.getFarmingProgress(),
+                            ps.getConstructionProgress(),
+                            "setLvl"
+                    ));
 
-                SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
-                        gameState.getWood(),
-                        gameState.getStone(),
-                        gameState.getMeat(),
-                        gameState.getWheat(),
-                        gameState.getHouses(),
-                        "setRes"
-                ));
+                if (updateGuiRequired) {
+                    SwingUtilities.invokeLater(GameGUI.getInstance().new setProgress(
+                            gameState.getWood(),
+                            gameState.getStone(),
+                            gameState.getMeat(),
+                            gameState.getWheat(),
+                            gameState.getHouses(),
+                            "setRes"
+                    ));
+                }
+                updateGuiRequired = false;
             }
 
             dt -= 1.0;
@@ -118,6 +122,7 @@ public class GameCalculations {
             gameState.addWood(extraLoot(GameCalculations.JOBS.WOODCUTTING));
             addExp(GameCalculations.JOBS.WOODCUTTING);
             woodDmg %= woodHP;
+            updateGuiRequired = true;
         }
         gameState.setWoodDmg(woodDmg);
 
@@ -131,6 +136,7 @@ public class GameCalculations {
             gameState.addStone(extraLoot(GameCalculations.JOBS.MINING));
             addExp(GameCalculations.JOBS.MINING);
             stoneDmg %= stoneHP;
+            updateGuiRequired = true;
         }
         gameState.setStoneDmg(stoneDmg);
 
@@ -145,6 +151,7 @@ public class GameCalculations {
             gameState.addMeat(extraLoot(GameCalculations.JOBS.HUNTING));
             addExp(GameCalculations.JOBS.HUNTING);
             animalDmg %= animalHP;
+            updateGuiRequired = true;
         }
         gameState.setAnimalDmg(animalDmg);
 
@@ -158,6 +165,7 @@ public class GameCalculations {
             gameState.addWheat(6*farmersWorking*extraLoot(GameCalculations.JOBS.FARMING));
             addExp(GameCalculations.JOBS.FARMING);
             wheatDmg %= wheatHP;
+            updateGuiRequired = true;
         }
         gameState.setWheatDmg(wheatDmg);
 
@@ -177,7 +185,9 @@ public class GameCalculations {
 
                 addExp(GameCalculations.JOBS.CONSTRUCTION);
                 houseDmg %= houseHP;
-            }
+                updateGuiRequired = true;
+            } else
+                houseDmg = houseHP - 1;
         }
         gameState.setHouseDmg(houseDmg);
     }
