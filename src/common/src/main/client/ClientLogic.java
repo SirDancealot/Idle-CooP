@@ -76,22 +76,18 @@ public class ClientLogic implements Runnable{
 
         //new Thread(new ClientLogic(uname,false, gameState, playerState)).start();
     }
-
+    boolean stopCom = false;
     private void loopCom(){
 
         Object[] data;
         String uname;
-        boolean stop = false;
 
-        while(!stop){
 
-            // if player press start state
-            if(false){
+        SpaceManager.addClientExitEvent(()-> stopCom = true);
 
-                String job;
-                //startWorkAtHost(job);
+        while(!stopWork){
 
-            }
+
         }
     }
 
@@ -110,13 +106,12 @@ public class ClientLogic implements Runnable{
         unameToPlayerState.put(uname,playerState);
     }
 
-    private boolean stop = false;
+    private boolean stopWork = false;
     private void loopWork(){
 
         GameCalculations gameCalculations =  new GameCalculations(forest,mine,huntingGrounds,field,constructionSite,gameState,unameToPlayerState,true);
-        SpaceManager.addClientExitEvent(() -> stop = true);
-        while (!stop){
-
+        SpaceManager.addClientExitEvent(() -> stopWork = true);
+        while (!stopWork){
             gameCalculations.update();
         }
     }

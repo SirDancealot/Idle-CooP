@@ -151,6 +151,24 @@ public class GameGUI extends JFrame implements ListSelectionListener {
                 ex.printStackTrace();
             }
         });
+
+        startWorkButton.addActionListener((ActionEvent e)->{
+
+            if(GUIjob == null){
+                try {
+                    GUIjob = SpaceManager.getLocalSpace("GUIjob");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            String job = list1.getSelectedValue().toString();
+            try {
+                GUIjob.put(job);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
