@@ -165,11 +165,17 @@ public class HostLogic implements Runnable{
     }
 
     private void savePlayer(String username) {
+        File f = new File("./data/players");
+        if (!f.exists())
+            f.mkdir();
         FileManager.saveObject("./data/players/" + username + ".ser", unameToPlayerState.get(username));
     }
 
     private void saveAll(){
         unameToPlayerState.forEach((String key, PlayerState value) -> {
+            File f = new File("./data/players");
+            if (!f.exists())
+                f.mkdir();
             FileManager.saveObject("./data/players/" + key + ".ser", value);
         });
         FileManager.saveObject("./data/GameState.ser", gameState);

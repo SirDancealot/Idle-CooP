@@ -55,6 +55,7 @@ public class GameCalculations {
         missingTicks = (int)dt;
 
         if (missingTicks > 0) {
+            long tickStart = System.nanoTime();
             ticks++;
             tick();
 
@@ -96,13 +97,14 @@ public class GameCalculations {
                         "setLvl"
                 ));
             }
-
+            long tickEnd = System.nanoTime();
             dt -= 1.0;
             String debug = PropManager.getProperty("debug");
             if (debug != null) {
                 if (debug.equals("true")) {
                     System.out.println("Tick: " + ticks);
                     System.out.println("TPS: " + (ticks/((nowNs-startTime)/nsPerSec)));
+                    System.out.println("Tick-time: " + ((tickEnd - tickStart)/nsPerSec));
                 }
             }
         }
