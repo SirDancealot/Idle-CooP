@@ -43,6 +43,8 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     private JLabel totalwheat;
     private JLabel totalhouses;
     private JLabel CurrentLvl;
+    private JTextPane jobInfo;
+    private JList playersAtTask;
 
     private PlayerState player;
     private Space hostChat, GUIjob;
@@ -173,6 +175,8 @@ public class GameGUI extends JFrame implements ListSelectionListener {
         totalhouses.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
         chatArea.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK,2),margin));
 
+
+
         sendMsg.addActionListener((ActionEvent e) -> {
         	if (hostChat == null) {
                 try {
@@ -214,20 +218,20 @@ public class GameGUI extends JFrame implements ListSelectionListener {
     public void valueChanged(ListSelectionEvent e) {
         if(list1.getSelectedValue() == "Woodcutting"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
-            requirements.setText("Requirements: ");
+            jobInfo.setText("Collect wood in the forrest. Bringing a friend will make this task faster!");
 
         } else if (list1.getSelectedValue() == "Mining"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
-
+            jobInfo.setText("Collect stone in the mine. Bringing a friend will make this task faster, and bringing more is even better!");
         }else if (list1.getSelectedValue() == "Hunting"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
-
+            jobInfo.setText("Go hunting in the woods. You need a hunting partner to do this task!");
         }else if (list1.getSelectedValue() == "Farming"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
-
+            jobInfo.setText("Farming the lush fields. Farming is slow but gives a lot of food. This task is faster and gives more, the more players that are working on it!");
         }else if (list1.getSelectedValue() == "Construction"){
             CurrentSkill.setText("Current Skill: " + list1.getSelectedValue().toString());
-
+            jobInfo.setText("You need wood, stone and some form of food to complete this task!");
         }
     }
 
