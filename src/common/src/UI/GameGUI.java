@@ -176,7 +176,10 @@ public class GameGUI extends JFrame implements ListSelectionListener {
                         JOptionPane.QUESTION_MESSAGE, null, null, null
                 );
             	if (confirm == 0) {
-            	    if (PropManager.getProperty("host") != null) {
+            	    String host = PropManager.getProperty("host");
+            	    if (host == null)
+            	        host = "false";
+            	    if (host.equals("true")) {
                         SpaceManager.exitHost();
                     }
                     SpaceManager.exitClient();
