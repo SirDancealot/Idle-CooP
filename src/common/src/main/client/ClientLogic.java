@@ -97,7 +97,7 @@ public class ClientLogic implements Runnable{
         try {
             gameSpace.put(uname,"work");
             boolean jobGiven = false;
-            if (!jobGiven) {
+            while (!jobGiven) {
                 userSpace.get(new ActualField("jobReq"));
                 gameSpace.put(uname,"job",job);
                 Object[] data = userSpace.get(new ActualField("job"), new FormalField(String.class));
