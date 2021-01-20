@@ -71,6 +71,9 @@ public class ClientLogic implements Runnable{
             data = userSpace.get(new ActualField("playerState"), new FormalField(PlayerState.class));
             playerState = (PlayerState) data[1];
 
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -93,8 +96,19 @@ public class ClientLogic implements Runnable{
     private void startWorkAtHost(String job){
         try {
             gameSpace.put(uname,"work");
-            userSpace.get(new ActualField("jobReq"));
-            gameSpace.put(uname,"job",job);
+            boolean jobGiven = false;
+            if (!jobGiven) {
+                userSpace.get(new ActualField("jobReq"));
+                gameSpace.put(uname,"job",job);
+                Object[] data = userSpace.get(new ActualField("job"), new FormalField(String.class));
+                if (data[1].toString().equals(job)) {
+                    gameSpace.put(uname, true);
+                    jobGiven = true;
+                } else {
+                    gameSpace.put(uname, false);
+                    jobGiven = false;
+                }
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

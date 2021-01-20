@@ -104,12 +104,21 @@ public class HostLogic implements Runnable{
                         //TODO update working thread with new player
 
                     case "work":
-                        //req job
-                        writeToUser(uname, "jobReq");
-                        //get job
-                        data = gameSpace.get(new ActualField(uname), new ActualField("job"), new FormalField(String.class));
+                        boolean jobCorrect = false;
+                        String job = "";
+                        while (!jobCorrect) {
+                            //req job
+                            writeToUser(uname, "jobReq");
+                            //get job
+                            data = gameSpace.get(new ActualField(uname), new ActualField("job"), new FormalField(String.class));
+                            job = data[2].toString();
+                            writeToUser(uname, "job", job);
+                            data = gameSpace.get(new ActualField(uname), new FormalField(Boolean.class));
+                            jobCorrect = (Boolean)data[1];
+                        }
+
                         stopWork(uname);
-                        switch (data[2].toString()){
+                        switch (job){
                             case "Woodcutting":
                                 forest.put(uname);
                                 break;
@@ -181,7 +190,7 @@ public class HostLogic implements Runnable{
         FileManager.saveObject("./data/GameState.ser", gameState);
     }
 
-    private void writeToUser(String uname, String req){
+    private void writeToUser(String uname, String... req){
         try {
             unameToSpace.get(uname).put(req);
         } catch (InterruptedException e) {
